@@ -77,6 +77,12 @@ document.getElementById('btn-start').addEventListener('click', () => {
   socket.emit('host:start');
 });
 
+document.getElementById('btn-test-mode').addEventListener('click', (e) => {
+  socket.emit('host:test_mode');
+  e.target.disabled = true;
+  e.target.textContent = '🤖 Bottar anslutna!';
+});
+
 function updateLobby(players) {
   const names = ['Johan', 'Langos', 'Andy', 'Pontus'];
   const connectedNames = Object.values(players).filter(p => p.connected).map(p => p.name);

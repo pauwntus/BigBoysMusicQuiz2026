@@ -195,6 +195,28 @@ body {
   cursor: not-allowed;
 }
 
+.btn-secondary {
+  background: transparent;
+  color: var(--accent);
+  border: 2px solid var(--accent);
+  padding: 1rem 2rem;
+  border-radius: 3rem;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.btn-secondary:hover:not(:disabled) {
+  background: rgba(245,158,11,0.15);
+  transform: scale(1.03);
+}
+.btn-secondary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .btn-control {
   border: none;
   padding: 0.8rem 1.8rem;

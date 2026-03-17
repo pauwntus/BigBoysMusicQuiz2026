@@ -36,7 +36,63 @@ let gameState = {
   timer: 0,
   round: 0,
   totalQuestions: questions.length,
+  testMode: false,
 };
+
+// Bot logic
+const BOT_NAMES = ['Johan', 'Langos', 'Andy'];
+const BOT_PREFIX = 'bot-';
+
+function addBots() {
+  BOT_NAMES.forEach(name => {
+    const id = BOT_PREFIX + name;
+    gameState.players[id] = {
+      id,
+      name,
+      score: 0,
+      color: PLAYER_COLORS[name] || '#888',
+      connected: true,
+      isBot: true,
+    };
+  });
+}
+
+function scheduleBotAnswers() {
+  if (!gameState.testMode) return;
+  const q = questions[gameState.questionIndex];
+  if (!q || q.type !== 'multiple-choice') return;
+
+  const bots = Object.entries(gameState.players).filter(([, p]) => p.isBot && p.connected);
+  bots.forEach(([id]) => {
+    const delay = 3000 + Math.random() * 12000;
+    setTimeout(() => {
+      if (gameState.phase !== 'buzz_open') return;
+      if (gameState.answers[id]) return;
+
+      // 60% chance correct
+      let answer;
+      if (Math.random() < 0.6) {
+        answer = q.answer;
+      } else {
+        const wrong = q.options.filter(o => o !== q.answer);
+        answer = wrong[Math.floor(Math.random() * wrong.length)];
+      }
+
+      const correct = answer === q.answer;
+      const points = correct ? (q.points || 2) : 0;
+      gameState.answers[id] = { answer, correct, points };
+      if (correct) gameState.players[id].score += points;
+
+      const connected = Object.keys(gameState.players).filter(pid => gameState.players[pid].connected);
+      if (Object.keys(gameState.answers).length >= connected.length) {
+        stopTimer();
+        revealAnswer();
+      } else {
+        broadcast();
+      }
+    }, delay);
+  });
+}
 
 function getLocalIP() {
   const interfaces = os.networkInterfaces();
@@ -157,6 +213,14 @@ io.on('connection', (socket) => {
     broadcast();
   });
 
+  // Host activates test mode (adds 3 bots)
+  socket.on('host:test_mode', () => {
+    if (gameState.phase !== 'lobby') return;
+    gameState.testMode = true;
+    addBots();
+    broadcast();
+  });
+
   // Host starts game
   socket.on('host:start', () => {
     if (gameState.phase !== 'lobby') return;
@@ -195,6 +259,7 @@ io.on('connection', (socket) => {
       setTimeout(() => {
         gameState.phase = 'buzz_open';
         broadcast();
+        scheduleBotAnswers();
         startTimer(20, null, () => {
           // Time's up - auto reveal
           revealAnswer();
@@ -293,6 +358,7 @@ io.on('connection', (socket) => {
       timer: 0,
       round: 0,
       totalQuestions: questions.length,
+      testMode: false,
     };
     broadcast();
   });
