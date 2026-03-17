@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎵 Big Boys Music Quiz 2026 – Programledare</title>
+  <link rel="stylesheet" href="/css/host.css">
+</head>
+<body>
+  <canvas id="bgCanvas"></canvas>
+
+  <!-- LOBBY -->
+  <div id="screen-lobby" class="screen active">
+    <div class="lobby-content">
+      <div class="logo-wrap">
+        <div class="logo-text">
+          <span class="logo-big">🎵 BIG BOYS</span>
+          <span class="logo-sub">MUSIC QUIZ 2026</span>
+        </div>
+      </div>
+      <div class="qr-section">
+        <p class="connect-label">Skanna för att ansluta</p>
+        <div id="qr-container">
+          <div class="qr-placeholder">Laddar QR-kod…</div>
+        </div>
+        <p id="connect-url" class="connect-url"></p>
+      </div>
+      <div class="player-list" id="lobby-players">
+        <div class="player-slot" data-name="Johan">
+          <div class="slot-avatar" style="background:#3b82f6">J</div>
+          <div class="slot-name">Johan</div>
+          <div class="slot-status" id="status-Johan">Väntar…</div>
+        </div>
+        <div class="player-slot" data-name="Langos">
+          <div class="slot-avatar" style="background:#ef4444">L</div>
+          <div class="slot-name">Langos</div>
+          <div class="slot-status" id="status-Langos">Väntar…</div>
+        </div>
+        <div class="player-slot" data-name="Andy">
+          <div class="slot-avatar" style="background:#22c55e">A</div>
+          <div class="slot-name">Andy</div>
+          <div class="slot-status" id="status-Andy">Väntar…</div>
+        </div>
+        <div class="player-slot" data-name="Pontus">
+          <div class="slot-avatar" style="background:#a855f7">P</div>
+          <div class="slot-name">Pontus</div>
+          <div class="slot-status" id="status-Pontus">Väntar…</div>
+        </div>
+      </div>
+      <button id="btn-start" class="btn-primary" disabled>Starta Quizet!</button>
+    </div>
+  </div>
+
+  <!-- COUNTDOWN -->
+  <div id="screen-countdown" class="screen">
+    <div class="countdown-wrap">
+      <div class="countdown-text">Gör er redo!</div>
+      <div id="countdown-number" class="countdown-number">3</div>
+    </div>
+  </div>
+
+  <!-- QUESTION -->
+  <div id="screen-question" class="screen">
+    <div class="question-header">
+      <div class="q-category" id="q-category">Kategori</div>
+      <div class="q-progress" id="q-progress">Fråga 1 / 25</div>
+      <div class="q-points" id="q-points">⭐ 2p</div>
+    </div>
+    <div class="question-body">
+      <div class="question-text" id="q-text">Frågetexten visas här…</div>
+      <div class="options-grid" id="q-options"></div>
+    </div>
+    <div class="question-footer">
+      <div class="timer-wrap">
+        <svg class="timer-svg" viewBox="0 0 120 120">
+          <circle class="timer-bg" cx="60" cy="60" r="54"/>
+          <circle class="timer-ring" id="timer-ring" cx="60" cy="60" r="54"/>
+        </svg>
+        <div class="timer-num" id="timer-num">–</div>
+      </div>
+      <div class="host-controls">
+        <button id="btn-reveal" class="btn-control btn-yellow">Avslöja Svar</button>
+        <button id="btn-correct" class="btn-control btn-green" style="display:none">✓ Rätt!</button>
+        <button id="btn-wrong" class="btn-control btn-red" style="display:none">✗ Fel!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REVEAL -->
+  <div id="screen-reveal" class="screen">
+    <div class="reveal-content">
+      <div class="reveal-category" id="reveal-category">Kategori</div>
+      <div class="reveal-question" id="reveal-question">Frågan</div>
+      <div class="reveal-answer-wrap">
+        <div class="reveal-answer-label">Rätt svar:</div>
+        <div class="reveal-answer" id="reveal-answer">Svaret</div>
+      </div>
+      <div class="reveal-explanation" id="reveal-explanation"></div>
+      <div class="reveal-results" id="reveal-results"></div>
+      <button id="btn-next" class="btn-primary">Nästa Fråga →</button>
+    </div>
+  </div>
+
+  <!-- SCOREBOARD -->
+  <div id="screen-scoreboard" class="screen">
+    <div class="scoreboard-content">
+      <h2 class="scoreboard-title">Ställning</h2>
+      <div class="scoreboard-list" id="scoreboard-list"></div>
+      <button id="btn-next-from-score" class="btn-primary">Nästa Fråga →</button>
+    </div>
+  </div>
+
+  <!-- GAME OVER -->
+  <div id="screen-gameover" class="screen">
+    <div id="confetti-canvas-wrap">
+      <canvas id="confetti-canvas"></canvas>
+    </div>
+    <div class="gameover-content">
+      <div class="gameover-title">🏆 SPELET SLUT! 🏆</div>
+      <div class="winner-announce" id="winner-announce"></div>
+      <div class="final-scores" id="final-scores"></div>
+      <button id="btn-reset" class="btn-primary" style="margin-top:2rem">Spela Igen!</button>
+    </div>
+  </div>
+
+  <!-- BUZZ OVERLAY -->
+  <div id="buzz-overlay" class="buzz-overlay hidden">
+    <div class="buzz-name" id="buzz-player-name">JOHAN</div>
+    <div class="buzz-label">BUZZADE IN!</div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/audio.js"></script>
+  <script src="/js/graphics.js"></script>
+  <script src="/js/host.js"></script>
+</body>
+</html>

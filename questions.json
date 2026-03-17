@@ -1,0 +1,249 @@
+[
+  {
+    "id": 1,
+    "type": "multiple-choice",
+    "category": "Svenska Legender",
+    "question": "Vilken låt representerade ABBA i Eurovision Song Contest 1974?",
+    "options": ["Dancing Queen", "Waterloo", "Fernando", "Gimme! Gimme! Gimme!"],
+    "answer": "Waterloo",
+    "points": 2,
+    "explanation": "ABBA vann Eurovision 1974 i Brighton med låten Waterloo!"
+  },
+  {
+    "id": 2,
+    "type": "multiple-choice",
+    "category": "Avicii Tribute",
+    "question": "Tim Bergling, känd som Avicii, var från vilken svensk stad?",
+    "options": ["Göteborg", "Malmö", "Stockholm", "Uppsala"],
+    "answer": "Stockholm",
+    "points": 2,
+    "explanation": "Tim Bergling växte upp i Stockholm och blev en av världens mest kända DJ:s."
+  },
+  {
+    "id": 3,
+    "type": "buzz",
+    "category": "Gissa Låten",
+    "question": "Vilken låt börjar med textraden: 'Friday night and the lights are low, looking out for the place to go...'?",
+    "answer": "Dancing Queen – ABBA",
+    "points": 3,
+    "explanation": "Dancing Queen av ABBA, från albumet Arrival (1976)"
+  },
+  {
+    "id": 4,
+    "type": "multiple-choice",
+    "category": "Svenska Hits",
+    "question": "Loreen vann Eurovision 2023 med låten Tattoo. Vilket år vann hon Eurovision FÖRSTA gången?",
+    "options": ["2010", "2012", "2015", "2018"],
+    "answer": "2012",
+    "points": 2,
+    "explanation": "Loreen vann Eurovision 2012 med Euphoria – en av de mest ikoniska eurovisionlåtarna någonsin!"
+  },
+  {
+    "id": 5,
+    "type": "multiple-choice",
+    "category": "Internationellt",
+    "question": "Vem sjunger låten 'Blinding Lights' (2019)?",
+    "options": ["Drake", "Post Malone", "The Weeknd", "Justin Bieber"],
+    "answer": "The Weeknd",
+    "points": 2,
+    "explanation": "The Weeknd med Blinding Lights – en av de bäst säljande singlarna i historien!"
+  },
+  {
+    "id": 6,
+    "type": "buzz",
+    "category": "Gissa Artisten",
+    "question": "Hon heter egentligen Robin Miriam Carlsson och är en av Sveriges mest framgångsrika musikexporter. Vem är hon?",
+    "answer": "Robyn",
+    "points": 3,
+    "explanation": "Robyn – känd för låtar som Dancing On My Own och With Every Heartbeat!"
+  },
+  {
+    "id": 7,
+    "type": "multiple-choice",
+    "category": "90-talsklassiker",
+    "question": "Vilken låt sjunger Dr. Alban på med refrängen 'It's my life, don't you forget'?",
+    "options": ["Sing Hallelujah", "It's My Life", "Look Who's Talking", "Hello Afrika"],
+    "answer": "It's My Life",
+    "points": 2,
+    "explanation": "Dr. Alban med It's My Life (1992) – en av de mest sålda singlarna i Sverige på 90-talet!"
+  },
+  {
+    "id": 8,
+    "type": "multiple-choice",
+    "category": "Svenska Artister",
+    "question": "Vilken trio bildade Swedish House Mafia?",
+    "options": [
+      "Avicii, Alesso, Eric Prydz",
+      "Sebastian Ingrosso, Axwell, Steve Angello",
+      "Robyn, Tove Lo, Zara Larsson",
+      "Otto Knows, Knife Party, Eric Prydz"
+    ],
+    "answer": "Sebastian Ingrosso, Axwell, Steve Angello",
+    "points": 2,
+    "explanation": "Swedish House Mafia bestod av Sebastian Ingrosso, Axwell och Steve Angello!"
+  },
+  {
+    "id": 9,
+    "type": "buzz",
+    "category": "Vilken Artist?",
+    "question": "Denna artist från Karlstad hade en stor hit 2013 med 'Wake Me Up' och dog tragiskt 2018. Vem?",
+    "answer": "Avicii (Tim Bergling)",
+    "points": 3,
+    "explanation": "Avicii – Tim Bergling. En av de mest älskade musikerna Sverige någonsin producerat."
+  },
+  {
+    "id": 10,
+    "type": "multiple-choice",
+    "category": "Internationellt",
+    "question": "Vilket franskt duo är kända för låtar som 'Get Lucky' och 'One More Time'?",
+    "options": ["Chemical Brothers", "Justice", "Daft Punk", "Air"],
+    "answer": "Daft Punk",
+    "points": 2,
+    "explanation": "Daft Punk – Thomas Bangalter och Guy-Manuel de Homem-Christo. Legendarerna!"
+  },
+  {
+    "id": 11,
+    "type": "multiple-choice",
+    "category": "Acen av Bass",
+    "question": "Vilken grupp sjunger 'All That She Wants' (1992)?",
+    "options": ["Roxette", "Ace of Base", "Army of Lovers", "Abba"],
+    "answer": "Ace of Base",
+    "points": 2,
+    "explanation": "Ace of Base från Göteborg – med hitsen All That She Wants och The Sign!"
+  },
+  {
+    "id": 12,
+    "type": "buzz",
+    "category": "Textrad",
+    "question": "Fortsätt texten: 'Never gonna give you up, never gonna let you down, never gonna run around and...'",
+    "answer": "desert you",
+    "points": 3,
+    "explanation": "Rick Astley – Never Gonna Give You Up (1987). Du har precis blivit Rickroll'd!"
+  },
+  {
+    "id": 13,
+    "type": "multiple-choice",
+    "category": "Svenska Hits",
+    "question": "Vilken låt av Zara Larsson blev en internationell hit 2016?",
+    "options": ["Lush Life", "Never Forget You", "Ain't My Fault", "Symphony"],
+    "answer": "Lush Life",
+    "points": 2,
+    "explanation": "Lush Life av Zara Larsson nådde topplaceringar i hela Europa 2016!"
+  },
+  {
+    "id": 14,
+    "type": "multiple-choice",
+    "category": "Guld-70-tal",
+    "question": "Vilket år släpptes Michael Jacksons album 'Thriller'?",
+    "options": ["1979", "1980", "1982", "1985"],
+    "answer": "1982",
+    "points": 2,
+    "explanation": "Thriller (1982) är det bäst säljande albumet i musikhistorien med över 66 miljoner sålda exemplar!"
+  },
+  {
+    "id": 15,
+    "type": "buzz",
+    "category": "Gissa Artisten",
+    "question": "Denna artist kallades 'Kungen av Rock and Roll' och hette egentligen Elvis Aaron Presley. Men vad kallades han till vardags?",
+    "answer": "The King / Elvis",
+    "points": 2,
+    "explanation": "Elvis Presley – The King of Rock and Roll!"
+  },
+  {
+    "id": 16,
+    "type": "multiple-choice",
+    "category": "2000-talshits",
+    "question": "Vem sjunger 'Crazy in Love' (2003)?",
+    "options": ["Rihanna", "Alicia Keys", "Beyoncé", "Mary J. Blige"],
+    "answer": "Beyoncé",
+    "points": 2,
+    "explanation": "Beyoncé med Crazy in Love – en av 2000-talets absolut största hits!"
+  },
+  {
+    "id": 17,
+    "type": "multiple-choice",
+    "category": "Musikgeografi",
+    "question": "Vilken stad kallas 'Musikens hemstad' och är känd för grunge-scenen på 90-talet?",
+    "options": ["Los Angeles", "New York", "Seattle", "Chicago"],
+    "answer": "Seattle",
+    "points": 2,
+    "explanation": "Seattle – hemstad för Nirvana, Pearl Jam och Soundgarden. Grungens vagga!"
+  },
+  {
+    "id": 18,
+    "type": "buzz",
+    "category": "Svenska Klassikers",
+    "question": "Vilken Roxette-sång börjar med: 'I know there's something in the wake of your smile'?",
+    "answer": "Listen To Your Heart",
+    "points": 3,
+    "explanation": "Listen To Your Heart av Roxette (1988) – ett av de mest kända svenska låtarna internationellt!"
+  },
+  {
+    "id": 19,
+    "type": "multiple-choice",
+    "category": "Hardrock",
+    "question": "Vilken band sjunger 'Bohemian Rhapsody'?",
+    "options": ["Led Zeppelin", "Queen", "The Rolling Stones", "Deep Purple"],
+    "answer": "Queen",
+    "points": 1,
+    "explanation": "Queen – Bohemian Rhapsody (1975). Skriven av Freddie Mercury och en av musikhistoriens mest komplexa hits!"
+  },
+  {
+    "id": 20,
+    "type": "multiple-choice",
+    "category": "Nutida Hits",
+    "question": "Vem sjunger låten 'As It Was' (2022)?",
+    "options": ["Ed Sheeran", "Harry Styles", "Shawn Mendes", "Justin Bieber"],
+    "answer": "Harry Styles",
+    "points": 2,
+    "explanation": "Harry Styles med As It Was – en av de mest spelade låtarna 2022!"
+  },
+  {
+    "id": 21,
+    "type": "buzz",
+    "category": "Dueller",
+    "question": "Namnge BÅDA artisterna i duon Eurythmics!",
+    "answer": "Annie Lennox och Dave Stewart",
+    "points": 3,
+    "explanation": "Annie Lennox och Dave Stewart – kända för Sweet Dreams (Are Made of This) från 1983!"
+  },
+  {
+    "id": 22,
+    "type": "multiple-choice",
+    "category": "Årtiondef",
+    "question": "Vilket decennium producerade Beastie Boys 'Fight For Your Right (To Party)'?",
+    "options": ["70-talet", "80-talet", "90-talet", "00-talet"],
+    "answer": "80-talet",
+    "points": 2,
+    "explanation": "Fight For Your Right (1986) – från Beastie Boys debutalbum Licensed to Ill!"
+  },
+  {
+    "id": 23,
+    "type": "multiple-choice",
+    "category": "DJ-kultur",
+    "question": "Vad heter Aviciis mest kända låt som mixar country och elektronika (2013)?",
+    "options": ["Levels", "Hey Brother", "Wake Me Up", "The Nights"],
+    "answer": "Wake Me Up",
+    "points": 2,
+    "explanation": "Wake Me Up (2013) med Aloe Blacc – en blandning av folk, country och EDM som tog världen med storm!"
+  },
+  {
+    "id": 24,
+    "type": "buzz",
+    "category": "Musikfilm",
+    "question": "I vilken film sjunger Freddie Mercury-rollfiguren låten Bohemian Rhapsody på scen under Live Aid 1985?",
+    "answer": "Bohemian Rhapsody (2018)",
+    "points": 3,
+    "explanation": "Bohemian Rhapsody (2018) med Rami Malek som Freddie Mercury – vann Oscar för Bästa Manliga Huvudroll!"
+  },
+  {
+    "id": 25,
+    "type": "multiple-choice",
+    "category": "Sista Frågan – Allt eller inget",
+    "question": "Vilket år grundades ABBA?",
+    "options": ["1970", "1972", "1974", "1976"],
+    "answer": "1972",
+    "points": 4,
+    "explanation": "ABBA grundades 1972 i Stockholm och upplöstes 1982. De återförenades 2021 med albumet Voyage!"
+  }
+]

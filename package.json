@@ -1,0 +1,15 @@
+{
+  "name": "bigboys-music-quiz-2026",
+  "version": "1.0.0",
+  "description": "Big Boys Music Quiz 2026 - Lokal multiplayer musikquiz",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.6.1",
+    "qrcode": "^1.5.3"
+  }
+}

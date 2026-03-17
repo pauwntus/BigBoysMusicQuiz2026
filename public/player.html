@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>🎵 Big Boys Music Quiz</title>
+  <link rel="stylesheet" href="/css/player.css">
+</head>
+<body>
+
+  <!-- NAME SELECTION -->
+  <div id="screen-select" class="screen active">
+    <div class="select-content">
+      <div class="select-title">🎵 Big Boys Music Quiz 2026</div>
+      <p class="select-sub">Vem är du?</p>
+      <div class="name-grid">
+        <button class="name-btn" data-name="Johan" data-color="#3b82f6">
+          <span class="name-icon">🎸</span>
+          <span class="name-label">Johan</span>
+        </button>
+        <button class="name-btn" data-name="Langos" data-color="#ef4444">
+          <span class="name-icon">🎤</span>
+          <span class="name-label">Langos</span>
+        </button>
+        <button class="name-btn" data-name="Andy" data-color="#22c55e">
+          <span class="name-icon">🥁</span>
+          <span class="name-label">Andy</span>
+        </button>
+        <button class="name-btn" data-name="Pontus" data-color="#a855f7">
+          <span class="name-icon">🎹</span>
+          <span class="name-label">Pontus</span>
+        </button>
+      </div>
+      <div id="select-error" class="select-error hidden"></div>
+    </div>
+  </div>
+
+  <!-- LOBBY (waiting) -->
+  <div id="screen-lobby" class="screen">
+    <div class="lobby-player-card" id="player-card">
+      <div class="player-avatar" id="player-avatar">J</div>
+      <div class="player-name" id="player-name-display">Johan</div>
+      <div class="player-score-label">Poäng</div>
+      <div class="player-score" id="player-score">0</div>
+    </div>
+    <div class="status-msg" id="lobby-status">
+      <div class="pulse-dot"></div>
+      <span>Väntar på att quizet startar…</span>
+    </div>
+  </div>
+
+  <!-- BUZZ SCREEN -->
+  <div id="screen-buzz" class="screen">
+    <div class="buzz-content">
+      <div class="buzz-question" id="buzz-question-text">Fråga laddas…</div>
+      <button id="buzz-btn" class="buzz-button">
+        <span class="buzz-btn-label">BUZZ!</span>
+      </button>
+      <div class="buzz-status" id="buzz-status"></div>
+      <div class="timer-bar-wrap">
+        <div class="timer-bar" id="timer-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MULTIPLE CHOICE SCREEN -->
+  <div id="screen-mc" class="screen">
+    <div class="mc-content">
+      <div class="mc-category" id="mc-category">Kategori</div>
+      <div class="mc-question" id="mc-question">Frågetexten…</div>
+      <div class="mc-options" id="mc-options"></div>
+      <div class="timer-bar-wrap">
+        <div class="timer-bar" id="mc-timer-bar"></div>
+      </div>
+      <div class="mc-status" id="mc-status"></div>
+    </div>
+  </div>
+
+  <!-- REVEAL SCREEN -->
+  <div id="screen-reveal" class="screen">
+    <div class="reveal-content">
+      <div class="reveal-result-icon" id="reveal-icon">–</div>
+      <div class="reveal-result-text" id="reveal-text">–</div>
+      <div class="reveal-correct-answer">
+        <span class="reveal-answer-label">Rätt svar:</span>
+        <span class="reveal-answer-val" id="reveal-answer-val">–</span>
+      </div>
+      <div class="reveal-score-gained" id="reveal-pts"></div>
+    </div>
+  </div>
+
+  <!-- GAME OVER -->
+  <div id="screen-gameover" class="screen">
+    <div class="gameover-content">
+      <div class="gameover-icon">🏆</div>
+      <div class="gameover-title">Spelet Slut!</div>
+      <div class="final-score-display" id="final-score-display">0p</div>
+      <div class="final-rank" id="final-rank"></div>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/player.js"></script>
+</body>
+</html>
