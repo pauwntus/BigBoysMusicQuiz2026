@@ -254,6 +254,51 @@ class AudioEngine {
     }
   }
 
+  // ── MUSIC QUESTION JINGLE ────────────────────────
+  playMusicJingle() {
+    this.resume();
+    const t = this.ctx.currentTime;
+    // Funky ascending pentatonic stab
+    const melody = [261.63, 329.63, 392, 523.25, 659.25, 783.99, 1046.5];
+    melody.forEach((f, i) => {
+      this._osc('triangle', f, t + i * 0.07, 0.4 - i * 0.03, 0.28);
+      this._osc('sine', f * 2, t + i * 0.07, 0.25, 0.08);
+    });
+    // Bass punch
+    this._osc('sawtooth', 65.41, t, 0.45, 0.5);
+    this._osc('sawtooth', 130.81, t + 0.08, 0.35, 0.25);
+    // Snare hits
+    this._noise(t, 0.08, 0.5, 4000);
+    this._noise(t + 0.25, 0.08, 0.45, 4000);
+    this._noise(t + 0.5, 0.1, 0.55, 4000);
+    // Kick
+    this._noise(t, 0.25, 0.7, 90);
+    this._noise(t + 0.5, 0.2, 0.6, 90);
+    // Shimmery hi-hats
+    for (let i = 0; i < 8; i++) {
+      this._noise(t + i * 0.09, 0.04, 0.12, 8000);
+    }
+    // Final chord stab
+    [261.63, 329.63, 392, 523.25].forEach(f => {
+      this._osc('sawtooth', f, t + 0.65, 0.5, 0.18);
+    });
+  }
+
+  // ── DRAMATIC DRUMROLL REVEAL ──────────────────────
+  playDrumroll() {
+    this.resume();
+    const t = this.ctx.currentTime;
+    for (let i = 0; i < 24; i++) {
+      const speed = 1 - (i / 24) * 0.5;
+      this._noise(t + i * 0.035 * speed, 0.05, 0.1 + i * 0.008, 3500);
+    }
+    // Big crash at end
+    this._noise(t + 0.8, 0.4, 0.6, 5000);
+    [261.63, 392, 523.25, 659.25].forEach(f => {
+      this._osc('sawtooth', f, t + 0.82, 0.6, 0.2);
+    });
+  }
+
   // ── QUESTION TENSION LOOP ─────────────────────────
   playTensionLoop(durationSec = 20) {
     this.resume();

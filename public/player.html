@@ -8,38 +8,47 @@
 </head>
 <body>
 
-  <!-- NAME SELECTION -->
+  <!-- CHARACTER CREATOR -->
   <div id="screen-select" class="screen active">
-    <div class="select-content">
+    <div class="creator-wrap">
       <div class="select-title">🎵 Big Boys Music Quiz 2026</div>
-      <p class="select-sub">Vem är du?</p>
-      <div class="name-grid">
-        <button class="name-btn" data-name="Johan" data-color="#3b82f6">
-          <span class="name-icon">🎸</span>
-          <span class="name-label">Johan</span>
-        </button>
-        <button class="name-btn" data-name="Langos" data-color="#ef4444">
-          <span class="name-icon">🎤</span>
-          <span class="name-label">Langos</span>
-        </button>
-        <button class="name-btn" data-name="Andy" data-color="#22c55e">
-          <span class="name-icon">🥁</span>
-          <span class="name-label">Andy</span>
-        </button>
-        <button class="name-btn" data-name="Pontus" data-color="#a855f7">
-          <span class="name-icon">🎹</span>
-          <span class="name-label">Pontus</span>
-        </button>
+
+      <!-- Live preview -->
+      <div class="char-preview">
+        <div class="preview-avatar" id="preview-avatar">🎵</div>
+        <div class="preview-name" id="preview-name">Ditt namn</div>
       </div>
+
+      <!-- Name input -->
+      <div class="creator-section">
+        <label class="creator-label">NAMN</label>
+        <input type="text" id="name-input" class="name-input"
+          placeholder="Skriv ditt namn…" maxlength="20"
+          autocomplete="off" spellcheck="false">
+      </div>
+
+      <!-- Emoji picker -->
+      <div class="creator-section">
+        <label class="creator-label">IKON</label>
+        <div class="emoji-grid" id="emoji-grid"></div>
+      </div>
+
+      <!-- Color picker -->
+      <div class="creator-section">
+        <label class="creator-label">FÄRG</label>
+        <div class="color-swatches" id="color-swatches"></div>
+      </div>
+
       <div id="select-error" class="select-error hidden"></div>
+      <button id="btn-join" class="btn-join" disabled>⚡ ANSLUT!</button>
     </div>
   </div>
 
   <!-- LOBBY (waiting) -->
   <div id="screen-lobby" class="screen">
     <div class="lobby-player-card" id="player-card">
-      <div class="player-avatar" id="player-avatar">J</div>
-      <div class="player-name" id="player-name-display">Johan</div>
+      <div class="player-avatar" id="player-avatar">🎵</div>
+      <div class="player-name" id="player-name-display">Namn</div>
       <div class="player-score-label">Poäng</div>
       <div class="player-score" id="player-score">0</div>
     </div>

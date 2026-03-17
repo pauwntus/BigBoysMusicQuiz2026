@@ -25,27 +25,9 @@
         </div>
         <p id="connect-url" class="connect-url"></p>
       </div>
+      <p id="player-count" class="player-count">0 spelare anslutna</p>
       <div class="player-list" id="lobby-players">
-        <div class="player-slot" data-name="Johan">
-          <div class="slot-avatar" style="background:#3b82f6">J</div>
-          <div class="slot-name">Johan</div>
-          <div class="slot-status" id="status-Johan">Väntar…</div>
-        </div>
-        <div class="player-slot" data-name="Langos">
-          <div class="slot-avatar" style="background:#ef4444">L</div>
-          <div class="slot-name">Langos</div>
-          <div class="slot-status" id="status-Langos">Väntar…</div>
-        </div>
-        <div class="player-slot" data-name="Andy">
-          <div class="slot-avatar" style="background:#22c55e">A</div>
-          <div class="slot-name">Andy</div>
-          <div class="slot-status" id="status-Andy">Väntar…</div>
-        </div>
-        <div class="player-slot" data-name="Pontus">
-          <div class="slot-avatar" style="background:#a855f7">P</div>
-          <div class="slot-name">Pontus</div>
-          <div class="slot-status" id="status-Pontus">Väntar…</div>
-        </div>
+        <p class="waiting-msg">Väntar på spelare… skanna QR-koden!</p>
       </div>
       <div style="display:flex;gap:1rem;flex-wrap:wrap;justify-content:center">
         <button id="btn-test-mode" class="btn-secondary">🤖 Testläge (3 bottar)</button>
@@ -64,6 +46,9 @@
 
   <!-- QUESTION -->
   <div id="screen-question" class="screen">
+    <div id="music-banner" class="music-banner" style="display:none">
+      🎵 MUSIKFRÅGA 🎵
+    </div>
     <div class="question-header">
       <div class="q-category" id="q-category">Kategori</div>
       <div class="q-progress" id="q-progress">Fråga 1 / 25</div>

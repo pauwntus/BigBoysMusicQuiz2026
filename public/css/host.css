@@ -172,6 +172,45 @@ body {
   color: var(--green);
 }
 
+.waiting-msg {
+  color: var(--muted);
+  font-style: italic;
+  font-size: 1rem;
+  text-align: center;
+  padding: 1rem;
+}
+
+.player-count {
+  font-size: 0.9rem;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ── Music Banner ── */
+.music-banner {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  background: linear-gradient(90deg, #a855f7, #ec4899, #f59e0b, #ec4899, #a855f7);
+  background-size: 300% 100%;
+  animation: bannerSlide 2s linear infinite;
+  color: #000;
+  font-size: 1.4rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-align: center;
+  padding: 0.5rem;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+@keyframes bannerSlide {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 300% 50%; }
+}
+
 /* ── Buttons ── */
 .btn-primary {
   background: linear-gradient(135deg, var(--accent), #ff6b35);

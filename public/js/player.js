@@ -7,6 +7,7 @@ const socket = io();
 // Player state
 let myName = null;
 let myColor = null;
+let myEmoji = null;
 let myScore = 0;
 let hasBuzzed = false;
 let hasAnswered = false;
@@ -83,39 +84,110 @@ function playWrongBeep() {
   vibrate([100, 50, 100]);
 }
 
-function playSelectBeep(color) {
-  beep(440, 0.1, 'triangle', 0.3);
-  vibrate([20]);
-}
+// ── Character Creator ──────────────────────────────
+const EMOJIS = [
+  '🎸','🎤','🥁','🎹','🎺','🎻','🤘','🦄',
+  '🔥','👾','🤖','⭐','🦊','🐸','💀','🎭',
+  '🦁','🐯','🦅','🐲','👑','🧠','🎯','🚀',
+  '💎','🌟','🍕','🎪','🎵','🎶','🐺','🎨',
+];
 
-// ── Name Selection ────────────────────────────────
-document.querySelectorAll('.name-btn').forEach(btn => {
+const COLORS = [
+  '#f59e0b','#ef4444','#3b82f6','#22c55e',
+  '#a855f7','#ec4899','#06b6d4','#f97316',
+];
+
+let selectedEmoji = EMOJIS[0];
+let selectedColor = COLORS[0];
+
+// Build emoji grid
+const emojiGrid = document.getElementById('emoji-grid');
+EMOJIS.forEach((emoji, idx) => {
+  const btn = document.createElement('button');
+  btn.className = 'emoji-btn' + (idx === 0 ? ' selected' : '');
+  btn.textContent = emoji;
   btn.addEventListener('click', () => {
-    const name = btn.dataset.name;
-    const color = btn.dataset.color;
-    playSelectBeep(color);
-    document.querySelectorAll('.name-btn').forEach(b => b.classList.remove('selected'));
+    document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
-
-    socket.emit('player:join', { name });
+    selectedEmoji = emoji;
+    updatePreview();
+    beep(440 + idx * 20, 0.08, 'triangle', 0.2);
+    vibrate([15]);
   });
+  emojiGrid.appendChild(btn);
 });
 
-socket.on('join:ok', ({ name, color }) => {
+// Build color swatches
+const colorSwatches = document.getElementById('color-swatches');
+COLORS.forEach((color, idx) => {
+  const btn = document.createElement('button');
+  btn.className = 'color-swatch' + (idx === 0 ? ' selected' : '');
+  btn.style.background = color;
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.color-swatch').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedColor = color;
+    document.documentElement.style.setProperty('--player-color', color);
+    updatePreview();
+    vibrate([15]);
+  });
+  colorSwatches.appendChild(btn);
+});
+
+// Name input + join button
+const nameInput = document.getElementById('name-input');
+const btnJoin = document.getElementById('btn-join');
+
+nameInput.addEventListener('input', () => {
+  updatePreview();
+  btnJoin.disabled = nameInput.value.trim().length < 1;
+});
+
+nameInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !btnJoin.disabled) btnJoin.click();
+});
+
+function updatePreview() {
+  const name = nameInput.value.trim() || 'Ditt namn';
+  document.getElementById('preview-avatar').textContent = selectedEmoji;
+  document.getElementById('preview-avatar').style.background = selectedColor;
+  document.getElementById('preview-name').textContent = name;
+  document.getElementById('preview-name').style.color = selectedColor;
+  document.querySelector('.char-preview').style.borderColor = selectedColor;
+  document.querySelector('.char-preview').style.boxShadow = `0 0 30px ${selectedColor}55`;
+  // Update selected emoji/swatch active glow
+  document.querySelectorAll('.emoji-btn.selected').forEach(b => {
+    b.style.borderColor = selectedColor;
+  });
+}
+
+btnJoin.addEventListener('click', () => {
+  const name = nameInput.value.trim();
+  if (!name) return;
+  beep(523, 0.1, 'triangle', 0.3);
+  setTimeout(() => beep(659, 0.1, 'triangle', 0.3), 80);
+  setTimeout(() => beep(784, 0.15, 'triangle', 0.3), 160);
+  vibrate([30, 20, 50]);
+  btnJoin.disabled = true;
+  btnJoin.textContent = 'Ansluter…';
+  socket.emit('player:join', { name, color: selectedColor, emoji: selectedEmoji });
+});
+
+socket.on('join:ok', ({ name, color, emoji }) => {
   myName = name;
   myColor = color;
+  myEmoji = emoji;
 
-  // Set CSS variable for player color
   document.documentElement.style.setProperty('--player-color', color);
 
-  // Update lobby card
-  document.getElementById('player-avatar').textContent = name[0];
-  document.getElementById('player-avatar').style.background = color;
+  const avatarEl = document.getElementById('player-avatar');
+  avatarEl.textContent = emoji;
+  avatarEl.style.background = color;
+  avatarEl.style.fontSize = '2.5rem';
+
   document.getElementById('player-name-display').textContent = name;
   document.getElementById('player-name-display').style.color = color;
   document.getElementById('player-score').style.color = color;
-
-  // Update lobby card border
   document.getElementById('player-card').style.borderColor = color;
   document.getElementById('player-card').style.boxShadow = `0 0 40px ${color}33`;
 
@@ -126,7 +198,10 @@ socket.on('join:error', ({ message }) => {
   const err = document.getElementById('select-error');
   err.textContent = message;
   err.classList.remove('hidden');
+  btnJoin.disabled = false;
+  btnJoin.textContent = '⚡ ANSLUT!';
   setTimeout(() => err.classList.add('hidden'), 3000);
+  beep(220, 0.3, 'sawtooth', 0.3);
   vibrate([100, 50, 100]);
 });
 
@@ -147,14 +222,12 @@ socket.on('state', (state) => {
     document.getElementById('player-score').textContent = myScore;
   }
 
-  // If not yet joined, stay on select screen
   if (!myName) return;
 
-  // Phase logic
   if (phase === 'lobby' || phase === 'countdown') {
     showScreen('lobby');
     document.getElementById('lobby-status').querySelector('span').textContent =
-      phase === 'countdown' ? 'Quizet startar…' : 'Väntar på att quizet startar…';
+      phase === 'countdown' ? 'Quizet startar snart… 🎵' : 'Väntar på att quizet startar…';
   }
 
   if (phase === 'question') {
@@ -195,7 +268,9 @@ socket.on('state', (state) => {
 
   if (phase === 'reveal') {
     const q = currentQuestion;
-    const myAnswerData = myPlayer ? Object.entries(state.answers).find(([id]) => players[id]?.name === myName) : null;
+    const myAnswerData = myPlayer
+      ? Object.entries(state.answers).find(([id]) => players[id]?.name === myName)
+      : null;
     const myAnswer = myAnswerData ? myAnswerData[1] : null;
     showRevealScreen(q, myAnswer);
   }
@@ -204,7 +279,7 @@ socket.on('state', (state) => {
     showGameOver(players);
   }
 
-  // Timer bar update
+  // Timer bar
   if (phase === 'buzz_open' && currentQuestion) {
     const max = currentQuestion.type === 'multiple-choice' ? 20 : 30;
     const fraction = Math.max(0, timer / max);
@@ -264,7 +339,8 @@ function showMCScreen(q) {
       hasAnswered = true;
       document.querySelectorAll('.mc-btn').forEach(b => { b.disabled = true; b.classList.remove('selected'); });
       btn.classList.add('selected');
-      beep(440, 0.1, 'triangle', 0.3);
+      beep(523, 0.08, 'triangle', 0.3);
+      setTimeout(() => beep(659, 0.08, 'triangle', 0.3), 60);
       vibrate([25]);
       document.getElementById('mc-status').textContent = 'Svar skickat! ✓';
       socket.emit('player:answer', { answer: opt });
@@ -281,7 +357,7 @@ function showRevealScreen(q, myAnswer) {
   const pts = myAnswer?.points || 0;
 
   const icon = document.getElementById('reveal-icon');
-  const text = document.getElementById('reveal-result-text');
+  const text = document.getElementById('reveal-text');
   const ptsEl = document.getElementById('reveal-pts');
 
   if (!myAnswer) {
@@ -290,14 +366,18 @@ function showRevealScreen(q, myAnswer) {
     text.style.color = 'var(--muted)';
     ptsEl.textContent = '';
   } else if (correct) {
-    icon.textContent = '✅';
-    text.textContent = 'Rätt!';
+    const icons = ['✅','🔥','⭐','💥','🎯'];
+    icon.textContent = icons[Math.floor(Math.random() * icons.length)];
+    const msgs = ['RÄTT!', 'KLOCKRENT!', 'JA!!', 'BOOM!'];
+    text.textContent = msgs[Math.floor(Math.random() * msgs.length)];
     text.style.color = 'var(--green)';
     ptsEl.textContent = `+${pts} poäng!`;
     playCorrectBeep();
   } else {
-    icon.textContent = '❌';
-    text.textContent = 'Fel!';
+    const icons = ['❌','💀','😭','🙈'];
+    icon.textContent = icons[Math.floor(Math.random() * icons.length)];
+    const msgs = ['FEL!', 'NEEEJ!', 'ASCH!', 'NÄSTAN...'];
+    text.textContent = msgs[Math.floor(Math.random() * msgs.length)];
     text.style.color = 'var(--red)';
     ptsEl.textContent = '';
     playWrongBeep();
@@ -336,5 +416,5 @@ socket.on('disconnect', () => {
 });
 
 socket.on('connect', () => {
-  if (myName) socket.emit('player:join', { name: myName });
+  if (myName) socket.emit('player:join', { name: myName, color: myColor, emoji: myEmoji });
 });

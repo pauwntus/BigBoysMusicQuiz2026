@@ -15,15 +15,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Load questions
 const questions = JSON.parse(fs.readFileSync(path.join(__dirname, 'questions.json'), 'utf8'));
 
-// Player name colors
-const PLAYER_COLORS = {
-  Johan: '#3b82f6',
-  Langos: '#ef4444',
-  Andy: '#22c55e',
-  Pontus: '#a855f7',
-};
-
-const AVAILABLE_NAMES = ['Johan', 'Langos', 'Andy', 'Pontus'];
+// Allowed emoji list (security: only allow from this set)
+const ALLOWED_EMOJIS = new Set([
+  '🎸','🎤','🥁','🎹','🎺','🎻','🤘','🦄','🔥','👾','🤖','⭐','🦊','🐸','💀','🎭',
+  '🎵','🎶','🦁','🐯','🦊','🐺','🦅','🐲','👑','🧠','🎯','🚀','💎','🌟','🍕','🎪',
+]);
 
 // Game state
 let gameState = {
@@ -40,17 +36,22 @@ let gameState = {
 };
 
 // Bot logic
-const BOT_NAMES = ['Johan', 'Langos', 'Andy'];
+const BOT_CONFIGS = [
+  { name: 'R2-Quiz', color: '#3b82f6', emoji: '🤖' },
+  { name: 'Musica', color: '#ef4444', emoji: '🎸' },
+  { name: 'Quizzo', color: '#22c55e', emoji: '👾' },
+];
 const BOT_PREFIX = 'bot-';
 
 function addBots() {
-  BOT_NAMES.forEach(name => {
-    const id = BOT_PREFIX + name;
+  BOT_CONFIGS.forEach(cfg => {
+    const id = BOT_PREFIX + cfg.name;
     gameState.players[id] = {
       id,
-      name,
+      name: cfg.name,
       score: 0,
-      color: PLAYER_COLORS[name] || '#888',
+      color: cfg.color,
+      emoji: cfg.emoji,
       connected: true,
       isBot: true,
     };
@@ -174,22 +175,27 @@ io.on('connection', (socket) => {
     socket.emit('qr', { url, qr });
   });
 
-  // Player joins with a name
+  // Player joins with a name, color, emoji
   socket.on('player:join', (data) => {
-    const name = data.name;
-    if (!AVAILABLE_NAMES.includes(name)) return;
+    const name = (data.name || '').trim().replace(/\s+/g, ' ').substring(0, 20);
+    if (name.length < 1) return;
 
-    // Check if name already taken by a connected player
+    const color = /^#[0-9a-f]{6}$/i.test(data.color) ? data.color : '#f59e0b';
+    const emoji = ALLOWED_EMOJIS.has(data.emoji) ? data.emoji : '🎵';
+
+    // Check if name already taken by a connected human player
     const alreadyTaken = Object.values(gameState.players).some(
-      p => p.name === name && p.connected && p.id !== socket.id
+      p => p.name.toLowerCase() === name.toLowerCase() && p.connected && p.id !== socket.id && !p.isBot
     );
     if (alreadyTaken) {
-      socket.emit('join:error', { message: `${name} är redan ansluten!` });
+      socket.emit('join:error', { message: `"${name}" är redan taget!` });
       return;
     }
 
-    // Reassign if reconnecting
-    const existing = Object.entries(gameState.players).find(([, p]) => p.name === name);
+    // Reassign if reconnecting (same name)
+    const existing = Object.entries(gameState.players).find(
+      ([, p]) => p.name.toLowerCase() === name.toLowerCase() && !p.isBot
+    );
     if (existing) {
       const [oldId] = existing;
       if (oldId !== socket.id) {
@@ -203,13 +209,14 @@ io.on('connection', (socket) => {
         id: socket.id,
         name,
         score: 0,
-        color: PLAYER_COLORS[name] || '#ffffff',
+        color,
+        emoji,
         connected: true,
       };
     }
 
-    console.log(`[player] ${name} joined`);
-    socket.emit('join:ok', { name, color: PLAYER_COLORS[name] });
+    console.log(`[player] ${name} ${emoji} joined`);
+    socket.emit('join:ok', { name, color, emoji });
     broadcast();
   });
 

@@ -9,18 +9,22 @@ const gfx = new GraphicsEngine('bgCanvas');
 gfx.start();
 let confetti = null;
 
-// TTS – Programledare (Swedish)
+// TTS – Programledare med karaktär
 let ttsVoice = null;
 function initTTS() {
   const load = () => {
     const voices = speechSynthesis.getVoices();
-    ttsVoice = voices.find(v => v.lang.startsWith('sv')) || voices[0] || null;
+    // Prefer Swedish, then English
+    ttsVoice = voices.find(v => v.lang === 'sv-SE')
+      || voices.find(v => v.lang.startsWith('sv'))
+      || voices.find(v => v.lang.startsWith('en'))
+      || voices[0] || null;
   };
   load();
   speechSynthesis.onvoiceschanged = load;
 }
 
-function speak(text, rate = 0.92, pitch = 1.05) {
+function speak(text, rate = 0.88, pitch = 1.1) {
   speechSynthesis.cancel();
   if (!text) return;
   const utt = new SpeechSynthesisUtterance(text);
@@ -32,7 +36,67 @@ function speak(text, rate = 0.92, pitch = 1.05) {
   speechSynthesis.speak(utt);
 }
 
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+const HOST = {
+  intros: [
+    'Håll i hatten, nu kör vi!',
+    'Spetsa öronen, nästa fråga!',
+    'Lugn i stormen... nu gäller det!',
+    'Ögon och öron öppna, folkens!',
+    'Tänk noga, det här kan vara lurigt!',
+    'Ingen fusk! Nu kör vi!',
+    'Dags att visa vad ni går för!',
+  ],
+  musicIntros: [
+    'MUSIKFRÅGA! Nu gäller det att ha koll på låtarna!',
+    'STOPP! Det här är en musikfråga! Lyssna noga!',
+    'Musik i kroppen? Bevisa det nu!',
+    'Musikälskare, er stund har kommit! MUSIKFRÅGA!',
+    'Nu testas musikhjärnan! MUSIKFRÅGA!',
+  ],
+  allCorrect: [
+    'ALLA HADE RÄTT! Otroligt! Är ni fuskare?!',
+    'Perfekt omgång! Klockrent av alla! Fantastiskt!',
+    'Wow, hundra procent! Imponerad är bara förnamnet!',
+    'ALLA? ALLA?! Ja, ni är helt enkelt briljanta!',
+  ],
+  someCorrect: [
+    'Delade meningar i salen!',
+    'Några hade koll, andra… inte så mycket!',
+    'Blandade resultat! Det är quiz, folkens!',
+    'Klyftan växer! Spännande!',
+  ],
+  noneCorrect: [
+    'INGEN HADE RÄTT! Skandal! Totalkatastrof!',
+    'Är ni verkligen säkra på att ni bor i Sverige?!',
+    'Noll poäng till alla! Det var… underwhelming!',
+    'INGEN?! Jag är besviken. Djupt besviken.',
+  ],
+  timeUp: [
+    'TIDEN ÄR UTE! Penslar ner!',
+    'STOPP! Inga fler svar!',
+    'Klockan har talat!',
+  ],
+};
+
 initTTS();
+
+function speakRevealCommentary(state) {
+  const answers = Object.values(state.answers);
+  const connected = Object.values(state.players).filter(p => p.connected);
+  const correct = answers.filter(a => a.correct).length;
+  const total = connected.length;
+  const ans = state.currentQuestion?.answer || '';
+  const expl = state.currentQuestion?.explanation || '';
+
+  let phrase;
+  if (correct === total && total > 0) phrase = pick(HOST.allCorrect);
+  else if (correct === 0) phrase = pick(HOST.noneCorrect);
+  else phrase = pick(HOST.someCorrect);
+
+  speak(`Rätt svar: ${ans}. ${phrase} ${expl}`, 0.86, 1.12);
+}
 audio.init();
 
 // ── Screen Management ──────────────────────────────
@@ -84,22 +148,27 @@ document.getElementById('btn-test-mode').addEventListener('click', (e) => {
 });
 
 function updateLobby(players) {
-  const names = ['Johan', 'Langos', 'Andy', 'Pontus'];
-  const connectedNames = Object.values(players).filter(p => p.connected).map(p => p.name);
-  names.forEach(name => {
-    const slot = document.querySelector(`.player-slot[data-name="${name}"]`);
-    const status = document.getElementById(`status-${name}`);
-    if (connectedNames.includes(name)) {
-      slot.classList.add('connected');
-      status.textContent = '✓ Ansluten';
-      status.classList.add('connected');
-    } else {
-      slot.classList.remove('connected');
-      status.textContent = 'Väntar…';
-      status.classList.remove('connected');
-    }
-  });
-  document.getElementById('btn-start').disabled = connectedNames.length === 0;
+  const connected = Object.values(players).filter(p => p.connected);
+  const list = document.getElementById('lobby-players');
+  list.innerHTML = '';
+
+  if (connected.length === 0) {
+    list.innerHTML = '<p class="waiting-msg">Väntar på spelare… skanna QR-koden!</p>';
+  } else {
+    connected.forEach(p => {
+      const slot = document.createElement('div');
+      slot.className = 'player-slot connected';
+      slot.innerHTML = `
+        <div class="slot-avatar" style="background:${p.color}">${p.emoji || p.name[0]}</div>
+        <div class="slot-name" style="color:${p.color}">${p.name}</div>
+        <div class="slot-status connected">✓ ${p.isBot ? 'Bot' : 'Ansluten'}</div>
+      `;
+      list.appendChild(slot);
+    });
+  }
+
+  document.getElementById('btn-start').disabled = connected.length === 0;
+  document.getElementById('player-count').textContent = `${connected.length} spelare anslutna`;
 }
 
 // ── Countdown ─────────────────────────────────────
@@ -346,10 +415,24 @@ socket.on('state', (state) => {
       hideBuzz();
       renderQuestion(state);
       const q = state.currentQuestion;
-      const roundAnnounce = questionIndex === 0 ? 'Fråga nummer ett!' :
-        questionIndex % 5 === 0 ? `Ny runda! Fråga nummer ${questionIndex + 1}!` :
-        `Fråga nummer ${questionIndex + 1}.`;
-      speak(`${roundAnnounce} Kategori: ${q?.category || ''}. ${q?.question || ''}`, 0.88);
+      const isMusic = q?.category?.startsWith('🎵');
+
+      // Show/hide music banner
+      const musicBanner = document.getElementById('music-banner');
+      if (musicBanner) musicBanner.style.display = isMusic ? 'flex' : 'none';
+
+      if (isMusic) {
+        audio.playMusicJingle();
+        const intro = pick(HOST.musicIntros);
+        setTimeout(() => {
+          speak(`${intro} ${q?.question || ''}`, 0.86, 1.15);
+        }, 900);
+      } else {
+        const roundAnnounce = questionIndex === 0 ? 'Fråga nummer ett!' :
+          questionIndex % 5 === 0 ? `Ny runda! Fråga nummer ${questionIndex + 1}!` :
+          `${pick(HOST.intros)} Fråga ${questionIndex + 1}.`;
+        speak(`${roundAnnounce} ${q?.question || ''}`, 0.87);
+      }
       prevIndex = questionIndex;
     }
 
@@ -367,10 +450,12 @@ socket.on('state', (state) => {
 
     if (phase === 'reveal') {
       hideBuzz();
-      renderReveal(state);
-      showScreen('reveal');
-      const correct = state.currentQuestion?.answer;
-      speak(`Rätt svar: ${correct}. ${state.currentQuestion?.explanation || ''}`, 0.88);
+      audio.playDrumroll();
+      setTimeout(() => {
+        renderReveal(state);
+        showScreen('reveal');
+        speakRevealCommentary(state);
+      }, 900);
     }
 
     if (phase === 'game_over') {
