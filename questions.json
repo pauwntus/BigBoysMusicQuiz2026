@@ -2,7 +2,7 @@
   {
     "id": 1,
     "type": "multiple-choice",
-    "category": "Svenska Legender",
+    "category": "🎵 Svenska Legender",
     "question": "Vilken låt representerade ABBA i Eurovision Song Contest 1974?",
     "options": ["Dancing Queen", "Waterloo", "Fernando", "Gimme! Gimme! Gimme!"],
     "answer": "Waterloo",
@@ -12,17 +12,17 @@
   {
     "id": 2,
     "type": "multiple-choice",
-    "category": "Avicii Tribute",
-    "question": "Tim Bergling, känd som Avicii, var från vilken svensk stad?",
-    "options": ["Göteborg", "Malmö", "Stockholm", "Uppsala"],
-    "answer": "Stockholm",
-    "points": 2,
-    "explanation": "Tim Bergling växte upp i Stockholm och blev en av världens mest kända DJ:s."
+    "category": "🎬 Film & TV",
+    "question": "I hur många delar består Peter Jacksons 'Sagan om ringen'-trilogi?",
+    "options": ["2", "3", "4", "6"],
+    "answer": "3",
+    "points": 1,
+    "explanation": "Trilogin består av Härskarringen, De två tornen och Konungens återkomst (2001–2003)."
   },
   {
     "id": 3,
     "type": "buzz",
-    "category": "Gissa Låten",
+    "category": "🎵 Gissa Låten",
     "question": "Vilken låt börjar med textraden: 'Friday night and the lights are low, looking out for the place to go...'?",
     "answer": "Dancing Queen – ABBA",
     "points": 3,
@@ -31,17 +31,17 @@
   {
     "id": 4,
     "type": "multiple-choice",
-    "category": "Svenska Hits",
-    "question": "Loreen vann Eurovision 2023 med låten Tattoo. Vilket år vann hon Eurovision FÖRSTA gången?",
-    "options": ["2010", "2012", "2015", "2018"],
-    "answer": "2012",
+    "category": "⚽ Sport",
+    "question": "Vilket land vann fotbolls-VM 2022 i Qatar?",
+    "options": ["Brasilien", "Frankrike", "Argentina", "Tyskland"],
+    "answer": "Argentina",
     "points": 2,
-    "explanation": "Loreen vann Eurovision 2012 med Euphoria – en av de mest ikoniska eurovisionlåtarna någonsin!"
+    "explanation": "Argentina vann VM 2022 på straffar mot Frankrike. Lionel Messi fick äntligen sitt VM-guld!"
   },
   {
     "id": 5,
     "type": "multiple-choice",
-    "category": "Internationellt",
+    "category": "🎵 Internationellt",
     "question": "Vem sjunger låten 'Blinding Lights' (2019)?",
     "options": ["Drake", "Post Malone", "The Weeknd", "Justin Bieber"],
     "answer": "The Weeknd",
@@ -50,17 +50,18 @@
   },
   {
     "id": 6,
-    "type": "buzz",
-    "category": "Gissa Artisten",
-    "question": "Hon heter egentligen Robin Miriam Carlsson och är en av Sveriges mest framgångsrika musikexporter. Vem är hon?",
-    "answer": "Robyn",
-    "points": 3,
-    "explanation": "Robyn – känd för låtar som Dancing On My Own och With Every Heartbeat!"
+    "type": "multiple-choice",
+    "category": "🎬 Film & TV",
+    "question": "Vilket år hade den första säsongen av 'Game of Thrones' premiär?",
+    "options": ["2009", "2011", "2013", "2015"],
+    "answer": "2011",
+    "points": 2,
+    "explanation": "Game of Thrones hade premiär på HBO den 17 april 2011 och avslutades 2019."
   },
   {
     "id": 7,
     "type": "multiple-choice",
-    "category": "90-talsklassiker",
+    "category": "🎵 90-talsklassiker",
     "question": "Vilken låt sjunger Dr. Alban på med refrängen 'It's my life, don't you forget'?",
     "options": ["Sing Hallelujah", "It's My Life", "Look Who's Talking", "Hello Afrika"],
     "answer": "It's My Life",
@@ -69,24 +70,18 @@
   },
   {
     "id": 8,
-    "type": "multiple-choice",
-    "category": "Svenska Artister",
-    "question": "Vilken trio bildade Swedish House Mafia?",
-    "options": [
-      "Avicii, Alesso, Eric Prydz",
-      "Sebastian Ingrosso, Axwell, Steve Angello",
-      "Robyn, Tove Lo, Zara Larsson",
-      "Otto Knows, Knife Party, Eric Prydz"
-    ],
-    "answer": "Sebastian Ingrosso, Axwell, Steve Angello",
-    "points": 2,
-    "explanation": "Swedish House Mafia bestod av Sebastian Ingrosso, Axwell och Steve Angello!"
+    "type": "buzz",
+    "category": "🌍 Geografi",
+    "question": "Vilket är världens minsta land till ytan?",
+    "answer": "Vatikanstaten",
+    "points": 3,
+    "explanation": "Vatikanstaten är bara 0,44 km² och ligger mitt i Rom!"
   },
   {
     "id": 9,
     "type": "buzz",
-    "category": "Vilken Artist?",
-    "question": "Denna artist från Karlstad hade en stor hit 2013 med 'Wake Me Up' och dog tragiskt 2018. Vem?",
+    "category": "🎵 Vilken Artist?",
+    "question": "Denna artist från Stockholm hade en stor hit 2013 med 'Wake Me Up' och dog tragiskt 2018. Vem?",
     "answer": "Avicii (Tim Bergling)",
     "points": 3,
     "explanation": "Avicii – Tim Bergling. En av de mest älskade musikerna Sverige någonsin producerat."
@@ -94,19 +89,19 @@
   {
     "id": 10,
     "type": "multiple-choice",
-    "category": "Internationellt",
-    "question": "Vilket franskt duo är kända för låtar som 'Get Lucky' och 'One More Time'?",
-    "options": ["Chemical Brothers", "Justice", "Daft Punk", "Air"],
-    "answer": "Daft Punk",
-    "points": 2,
-    "explanation": "Daft Punk – Thomas Bangalter och Guy-Manuel de Homem-Christo. Legendarerna!"
+    "category": "🎬 Film & TV",
+    "question": "Vem spelar Tony Stark / Iron Man i Marvel-filmerna?",
+    "options": ["Chris Evans", "Chris Hemsworth", "Robert Downey Jr.", "Mark Ruffalo"],
+    "answer": "Robert Downey Jr.",
+    "points": 1,
+    "explanation": "Robert Downey Jr. spelade Tony Stark / Iron Man från Iron Man (2008) till Avengers: Endgame (2019)."
   },
   {
     "id": 11,
     "type": "multiple-choice",
-    "category": "Acen av Bass",
+    "category": "🎵 Ace of Base",
     "question": "Vilken grupp sjunger 'All That She Wants' (1992)?",
-    "options": ["Roxette", "Ace of Base", "Army of Lovers", "Abba"],
+    "options": ["Roxette", "Ace of Base", "Army of Lovers", "ABBA"],
     "answer": "Ace of Base",
     "points": 2,
     "explanation": "Ace of Base från Göteborg – med hitsen All That She Wants och The Sign!"
@@ -114,7 +109,7 @@
   {
     "id": 12,
     "type": "buzz",
-    "category": "Textrad",
+    "category": "🎵 Textrad",
     "question": "Fortsätt texten: 'Never gonna give you up, never gonna let you down, never gonna run around and...'",
     "answer": "desert you",
     "points": 3,
@@ -123,17 +118,17 @@
   {
     "id": 13,
     "type": "multiple-choice",
-    "category": "Svenska Hits",
-    "question": "Vilken låt av Zara Larsson blev en internationell hit 2016?",
-    "options": ["Lush Life", "Never Forget You", "Ain't My Fault", "Symphony"],
-    "answer": "Lush Life",
+    "category": "⚽ Sport",
+    "question": "Hur många gånger har Sverige vunnit OS-guld i ishockey (herrar)?",
+    "options": ["0", "1", "2", "3"],
+    "answer": "2",
     "points": 2,
-    "explanation": "Lush Life av Zara Larsson nådde topplaceringar i hela Europa 2016!"
+    "explanation": "Sverige vann OS-guld i ishockey 1994 (Lillehammer) och 2006 (Turin)!"
   },
   {
     "id": 14,
     "type": "multiple-choice",
-    "category": "Guld-70-tal",
+    "category": "🎵 Musikhistoria",
     "question": "Vilket år släpptes Michael Jacksons album 'Thriller'?",
     "options": ["1979", "1980", "1982", "1985"],
     "answer": "1982",
@@ -142,17 +137,18 @@
   },
   {
     "id": 15,
-    "type": "buzz",
-    "category": "Gissa Artisten",
-    "question": "Denna artist kallades 'Kungen av Rock and Roll' och hette egentligen Elvis Aaron Presley. Men vad kallades han till vardags?",
-    "answer": "The King / Elvis",
-    "points": 2,
-    "explanation": "Elvis Presley – The King of Rock and Roll!"
+    "type": "multiple-choice",
+    "category": "🎬 Film & TV",
+    "question": "Vilken Netflix-serie handlar om en grupp ungdomar i Hawkins, Indiana som möter övernaturliga krafter?",
+    "options": ["Dark", "The OA", "Stranger Things", "Mindhunter"],
+    "answer": "Stranger Things",
+    "points": 1,
+    "explanation": "Stranger Things – skapades av bröderna Duffer och hade premiär på Netflix 2016!"
   },
   {
     "id": 16,
     "type": "multiple-choice",
-    "category": "2000-talshits",
+    "category": "🎵 2000-talshits",
     "question": "Vem sjunger 'Crazy in Love' (2003)?",
     "options": ["Rihanna", "Alicia Keys", "Beyoncé", "Mary J. Blige"],
     "answer": "Beyoncé",
@@ -161,18 +157,17 @@
   },
   {
     "id": 17,
-    "type": "multiple-choice",
-    "category": "Musikgeografi",
-    "question": "Vilken stad kallas 'Musikens hemstad' och är känd för grunge-scenen på 90-talet?",
-    "options": ["Los Angeles", "New York", "Seattle", "Chicago"],
-    "answer": "Seattle",
+    "type": "buzz",
+    "category": "🌍 Geografi",
+    "question": "Vilken är Sveriges näst största stad (efter Stockholm)?",
+    "answer": "Göteborg",
     "points": 2,
-    "explanation": "Seattle – hemstad för Nirvana, Pearl Jam och Soundgarden. Grungens vagga!"
+    "explanation": "Göteborg är Sveriges näst största stad med ca 600 000 invånare!"
   },
   {
     "id": 18,
     "type": "buzz",
-    "category": "Svenska Klassikers",
+    "category": "🎵 Svenska Klassikers",
     "question": "Vilken Roxette-sång börjar med: 'I know there's something in the wake of your smile'?",
     "answer": "Listen To Your Heart",
     "points": 3,
@@ -181,17 +176,17 @@
   {
     "id": 19,
     "type": "multiple-choice",
-    "category": "Hardrock",
-    "question": "Vilken band sjunger 'Bohemian Rhapsody'?",
-    "options": ["Led Zeppelin", "Queen", "The Rolling Stones", "Deep Purple"],
-    "answer": "Queen",
-    "points": 1,
-    "explanation": "Queen – Bohemian Rhapsody (1975). Skriven av Freddie Mercury och en av musikhistoriens mest komplexa hits!"
+    "category": "🎬 Film & TV",
+    "question": "Vilken skådespelare spelar Joker i filmen från 2019?",
+    "options": ["Heath Ledger", "Joaquin Phoenix", "Jared Leto", "Jack Nicholson"],
+    "answer": "Joaquin Phoenix",
+    "points": 2,
+    "explanation": "Joaquin Phoenix vann Oscar för Bästa manliga huvudroll för sin roll som Joker 2019!"
   },
   {
     "id": 20,
     "type": "multiple-choice",
-    "category": "Nutida Hits",
+    "category": "🎵 Nutida Hits",
     "question": "Vem sjunger låten 'As It Was' (2022)?",
     "options": ["Ed Sheeran", "Harry Styles", "Shawn Mendes", "Justin Bieber"],
     "answer": "Harry Styles",
@@ -200,46 +195,95 @@
   },
   {
     "id": 21,
-    "type": "buzz",
-    "category": "Dueller",
-    "question": "Namnge BÅDA artisterna i duon Eurythmics!",
-    "answer": "Annie Lennox och Dave Stewart",
-    "points": 3,
-    "explanation": "Annie Lennox och Dave Stewart – kända för Sweet Dreams (Are Made of This) från 1983!"
+    "type": "multiple-choice",
+    "category": "⚽ Sport",
+    "question": "Vilket lag vann Champions League säsongen 2023/2024?",
+    "options": ["Manchester City", "Bayern München", "Real Madrid", "PSG"],
+    "answer": "Real Madrid",
+    "points": 2,
+    "explanation": "Real Madrid vann Champions League 2024 för 15:e gången, finalen mot Borussia Dortmund!"
   },
   {
     "id": 22,
-    "type": "multiple-choice",
-    "category": "Årtiondef",
-    "question": "Vilket decennium producerade Beastie Boys 'Fight For Your Right (To Party)'?",
-    "options": ["70-talet", "80-talet", "90-talet", "00-talet"],
-    "answer": "80-talet",
+    "type": "buzz",
+    "category": "🎬 Film & TV",
+    "question": "Vad heter den karaktär som Bryan Cranston spelar i Breaking Bad?",
+    "answer": "Walter White (eller Heisenberg)",
     "points": 2,
-    "explanation": "Fight For Your Right (1986) – från Beastie Boys debutalbum Licensed to Ill!"
+    "explanation": "Walter White – kemilärare som blir narkotikabaron. En av TV-historiens mest ikoniska karaktärer!"
   },
   {
     "id": 23,
     "type": "multiple-choice",
-    "category": "DJ-kultur",
+    "category": "🎵 DJ-kultur",
     "question": "Vad heter Aviciis mest kända låt som mixar country och elektronika (2013)?",
     "options": ["Levels", "Hey Brother", "Wake Me Up", "The Nights"],
     "answer": "Wake Me Up",
     "points": 2,
-    "explanation": "Wake Me Up (2013) med Aloe Blacc – en blandning av folk, country och EDM som tog världen med storm!"
+    "explanation": "Wake Me Up (2013) med Aloe Blacc – en blandning av folk, country och EDM!"
   },
   {
     "id": 24,
-    "type": "buzz",
-    "category": "Musikfilm",
-    "question": "I vilken film sjunger Freddie Mercury-rollfiguren låten Bohemian Rhapsody på scen under Live Aid 1985?",
-    "answer": "Bohemian Rhapsody (2018)",
-    "points": 3,
-    "explanation": "Bohemian Rhapsody (2018) med Rami Malek som Freddie Mercury – vann Oscar för Bästa Manliga Huvudroll!"
+    "type": "multiple-choice",
+    "category": "🌍 Allmänbildning",
+    "question": "Vilket land har flest invånare i världen (2024)?",
+    "options": ["Kina", "USA", "Indien", "Indonesien"],
+    "answer": "Indien",
+    "points": 2,
+    "explanation": "Indien gick om Kina som världens folkrikaste land 2023 med över 1,4 miljarder invånare!"
   },
   {
     "id": 25,
+    "type": "buzz",
+    "category": "🎬 Film & TV",
+    "question": "Hur många Oscar-statyetter vann filmen 'Oppenheimer' (2023)?",
+    "answer": "7",
+    "points": 3,
+    "explanation": "Oppenheimer vann 7 Oscars 2024, inklusive Bästa film, Bästa regi (Nolan) och Bästa manliga huvudroll (Cillian Murphy)!"
+  },
+  {
+    "id": 26,
     "type": "multiple-choice",
-    "category": "Sista Frågan – Allt eller inget",
+    "category": "⚽ Sport",
+    "question": "Zlatan Ibrahimović spelade för hur många europeiska klubbar under sin karriär?",
+    "options": ["5", "7", "9", "11"],
+    "answer": "9",
+    "points": 2,
+    "explanation": "Malmö FF, Ajax, Juventus, Inter, Barcelona, Milan, PSG, Manchester United, LA Galaxy, Milan igen = 9 klubbar!"
+  },
+  {
+    "id": 27,
+    "type": "multiple-choice",
+    "category": "🎵 Hardrock",
+    "question": "Vilken band sjunger 'Bohemian Rhapsody'?",
+    "options": ["Led Zeppelin", "Queen", "The Rolling Stones", "Deep Purple"],
+    "answer": "Queen",
+    "points": 1,
+    "explanation": "Queen – Bohemian Rhapsody (1975). Skriven av Freddie Mercury och en av musikhistoriens mest komplexa hits!"
+  },
+  {
+    "id": 28,
+    "type": "buzz",
+    "category": "🌍 Allmänbildning",
+    "question": "Hur många ben har en spindel?",
+    "answer": "8",
+    "points": 1,
+    "explanation": "Spindlar är spindeldjur (arachnider) och har 8 ben – till skillnad från insekter som har 6!"
+  },
+  {
+    "id": 29,
+    "type": "multiple-choice",
+    "category": "🎬 Film & TV",
+    "question": "Vilken film vann Oscar för Bästa film år 2020?",
+    "options": ["1917", "Joker", "Parasite", "The Irishman"],
+    "answer": "Parasite",
+    "points": 3,
+    "explanation": "Parasite av Bong Joon-ho – första icke-engelskspråkiga film att vinna Bästa film i Oscarhistorien!"
+  },
+  {
+    "id": 30,
+    "type": "multiple-choice",
+    "category": "🎵 Sista Frågan – Allt eller inget",
     "question": "Vilket år grundades ABBA?",
     "options": ["1970", "1972", "1974", "1976"],
     "answer": "1972",
