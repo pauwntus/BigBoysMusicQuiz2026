@@ -21,10 +21,11 @@
   },
   {
     "id": 3,
-    "type": "buzz",
+    "type": "multiple-choice",
     "category": "🎵 Gissa Låten",
     "question": "Vilken låt börjar med textraden: 'Friday night and the lights are low, looking out for the place to go...'?",
-    "answer": "Dancing Queen – ABBA",
+    "options": ["Waterloo", "Gimme! Gimme! Gimme!", "Dancing Queen", "Fernando"],
+    "answer": "Dancing Queen",
     "points": 3,
     "explanation": "Dancing Queen av ABBA, från albumet Arrival (1976)"
   },
@@ -70,19 +71,21 @@
   },
   {
     "id": 8,
-    "type": "buzz",
+    "type": "multiple-choice",
     "category": "🌍 Geografi",
     "question": "Vilket är världens minsta land till ytan?",
+    "options": ["Monaco", "San Marino", "Vatikanstaten", "Liechtenstein"],
     "answer": "Vatikanstaten",
     "points": 3,
     "explanation": "Vatikanstaten är bara 0,44 km² och ligger mitt i Rom!"
   },
   {
     "id": 9,
-    "type": "buzz",
+    "type": "multiple-choice",
     "category": "🎵 Vilken Artist?",
     "question": "Denna artist från Stockholm hade en stor hit 2013 med 'Wake Me Up' och dog tragiskt 2018. Vem?",
-    "answer": "Avicii (Tim Bergling)",
+    "options": ["Alesso", "Eric Prydz", "Avicii", "Swedish House Mafia"],
+    "answer": "Avicii",
     "points": 3,
     "explanation": "Avicii – Tim Bergling. En av de mest älskade musikerna Sverige någonsin producerat."
   },
@@ -108,9 +111,10 @@
   },
   {
     "id": 12,
-    "type": "buzz",
+    "type": "multiple-choice",
     "category": "🎵 Textrad",
     "question": "Fortsätt texten: 'Never gonna give you up, never gonna let you down, never gonna run around and...'",
+    "options": ["forget you", "desert you", "leave you", "betray you"],
     "answer": "desert you",
     "points": 3,
     "explanation": "Rick Astley – Never Gonna Give You Up (1987). Du har precis blivit Rickroll'd!"
@@ -157,18 +161,20 @@
   },
   {
     "id": 17,
-    "type": "buzz",
+    "type": "multiple-choice",
     "category": "🌍 Geografi",
     "question": "Vilken är Sveriges näst största stad (efter Stockholm)?",
+    "options": ["Malmö", "Uppsala", "Göteborg", "Linköping"],
     "answer": "Göteborg",
     "points": 2,
     "explanation": "Göteborg är Sveriges näst största stad med ca 600 000 invånare!"
   },
   {
     "id": 18,
-    "type": "buzz",
+    "type": "multiple-choice",
     "category": "🎵 Svenska Klassikers",
     "question": "Vilken Roxette-sång börjar med: 'I know there's something in the wake of your smile'?",
+    "options": ["It Must Have Been Love", "The Look", "Listen To Your Heart", "Joyride"],
     "answer": "Listen To Your Heart",
     "points": 3,
     "explanation": "Listen To Your Heart av Roxette (1988) – ett av de mest kända svenska låtarna internationellt!"
@@ -205,10 +211,11 @@
   },
   {
     "id": 22,
-    "type": "buzz",
+    "type": "multiple-choice",
     "category": "🎬 Film & TV",
     "question": "Vad heter den karaktär som Bryan Cranston spelar i Breaking Bad?",
-    "answer": "Walter White (eller Heisenberg)",
+    "options": ["Jesse Pinkman", "Hank Schrader", "Walter White", "Saul Goodman"],
+    "answer": "Walter White",
     "points": 2,
     "explanation": "Walter White – kemilärare som blir narkotikabaron. En av TV-historiens mest ikoniska karaktärer!"
   },
@@ -234,9 +241,10 @@
   },
   {
     "id": 25,
-    "type": "buzz",
+    "type": "multiple-choice",
     "category": "🎬 Film & TV",
     "question": "Hur många Oscar-statyetter vann filmen 'Oppenheimer' (2023)?",
+    "options": ["4", "5", "7", "13"],
     "answer": "7",
     "points": 3,
     "explanation": "Oppenheimer vann 7 Oscars 2024, inklusive Bästa film, Bästa regi (Nolan) och Bästa manliga huvudroll (Cillian Murphy)!"
@@ -263,9 +271,10 @@
   },
   {
     "id": 28,
-    "type": "buzz",
+    "type": "multiple-choice",
     "category": "🌍 Allmänbildning",
     "question": "Hur många ben har en spindel?",
+    "options": ["6", "8", "10", "12"],
     "answer": "8",
     "points": 1,
     "explanation": "Spindlar är spindeldjur (arachnider) och har 8 ben – till skillnad från insekter som har 6!"
