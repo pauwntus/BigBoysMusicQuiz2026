@@ -82,6 +82,111 @@ const HOST = {
 
 initTTS();
 
+// ── YouTube IFrame API ─────────────────────────────
+let ytVideoPlayer = null;
+let ytAudioPlayer = null;
+let ytVideoReady = false;
+let ytAudioReady = false;
+let mediaState = { videoId: null, startAt: 0, audioOnly: true, isPlaying: false };
+
+window.onYouTubeIframeAPIReady = () => {
+  ytAudioPlayer = new YT.Player('yt-audio-player', {
+    width: '1', height: '1',
+    playerVars: { controls: 0, rel: 0, modestbranding: 1, disablekb: 1, iv_load_policy: 3 },
+    events: { onReady: () => { ytAudioReady = true; } },
+  });
+  ytVideoPlayer = new YT.Player('yt-player-container', {
+    width: '100%', height: '100%',
+    playerVars: { controls: 1, rel: 0, modestbranding: 1, iv_load_policy: 3, fs: 0 },
+    events: { onReady: () => { ytVideoReady = true; } },
+  });
+};
+
+function loadMedia(media) {
+  const area = document.getElementById('media-area');
+  const audioEl = document.getElementById('media-audio');
+  const videoEl = document.getElementById('media-video');
+  const imageEl = document.getElementById('media-image');
+  const playBtn = document.getElementById('btn-play-media');
+
+  stopMedia(false);
+
+  if (!media) { area.style.display = 'none'; return; }
+
+  area.style.display = 'flex';
+  audioEl.style.display = 'none';
+  videoEl.style.display = 'none';
+  imageEl.style.display = 'none';
+  playBtn.style.display = 'none';
+
+  if (media.type === 'youtube') {
+    mediaState = { videoId: media.videoId, startAt: media.startAt || 0, audioOnly: media.audioOnly !== false, isPlaying: false };
+    if (mediaState.audioOnly) {
+      audioEl.style.display = 'flex';
+      pauseSoundBars();
+    } else {
+      videoEl.style.display = 'flex';
+    }
+    playBtn.style.display = 'inline-block';
+    playBtn.textContent = '▶ SPELA';
+    playBtn.classList.remove('playing');
+  } else if (media.type === 'image') {
+    imageEl.style.display = 'flex';
+    document.getElementById('media-img').src = media.url;
+    document.getElementById('media-img').alt = media.alt || '';
+  }
+}
+
+function stopMedia(hideArea = true) {
+  try {
+    if (ytAudioReady && ytAudioPlayer) ytAudioPlayer.stopVideo();
+    if (ytVideoReady && ytVideoPlayer) ytVideoPlayer.stopVideo();
+  } catch(e) {}
+  mediaState.isPlaying = false;
+  pauseSoundBars();
+  const pb = document.getElementById('btn-play-media');
+  if (pb) { pb.textContent = '▶ SPELA'; pb.classList.remove('playing'); }
+  if (hideArea) document.getElementById('media-area').style.display = 'none';
+}
+
+function pauseSoundBars() {
+  document.querySelectorAll('.sound-bar').forEach(b => b.classList.add('paused'));
+}
+function playSoundBars() {
+  document.querySelectorAll('.sound-bar').forEach(b => b.classList.remove('paused'));
+}
+
+document.getElementById('btn-play-media').addEventListener('click', () => {
+  const { videoId, startAt, audioOnly, isPlaying } = mediaState;
+  if (!videoId) return;
+  const pb = document.getElementById('btn-play-media');
+  if (isPlaying) {
+    try {
+      if (audioOnly && ytAudioReady) ytAudioPlayer.pauseVideo();
+      else if (!audioOnly && ytVideoReady) ytVideoPlayer.pauseVideo();
+    } catch(e) {}
+    mediaState.isPlaying = false;
+    pauseSoundBars();
+    pb.textContent = '▶ SPELA'; pb.classList.remove('playing');
+    document.getElementById('now-playing-text').textContent = '⏸ Pausad';
+  } else {
+    try {
+      if (audioOnly && ytAudioReady) {
+        ytAudioPlayer.loadVideoById({ videoId, startSeconds: startAt });
+        ytAudioPlayer.playVideo();
+        ytAudioPlayer.setVolume(100);
+      } else if (!audioOnly && ytVideoReady) {
+        ytVideoPlayer.loadVideoById({ videoId, startSeconds: startAt });
+        ytVideoPlayer.playVideo();
+      }
+    } catch(e) { console.warn('YT error', e); }
+    mediaState.isPlaying = true;
+    playSoundBars();
+    pb.textContent = '⏸ PAUSA'; pb.classList.add('playing');
+    document.getElementById('now-playing-text').textContent = '🎵 Spelar…';
+  }
+});
+
 function speakRevealCommentary(state) {
   const answers = Object.values(state.answers);
   const connected = Object.values(state.players).filter(p => p.connected);
@@ -233,6 +338,9 @@ function renderQuestion(state) {
   } else {
     grid.innerHTML = `<p style="color:#a855f7;font-size:1.2rem;font-style:italic;text-align:center;grid-column:1/-1">🎤 Buzz-in fråga – tryck på buzz-knappen!</p>`;
   }
+
+  // Load media
+  loadMedia(q.media || null);
 
   // Host controls
   document.getElementById('btn-reveal').style.display = 'inline-block';
@@ -450,6 +558,7 @@ socket.on('state', (state) => {
 
     if (phase === 'reveal') {
       hideBuzz();
+      stopMedia(true);
       audio.playDrumroll();
       setTimeout(() => {
         renderReveal(state);

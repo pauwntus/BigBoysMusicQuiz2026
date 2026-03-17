@@ -54,6 +54,37 @@
       <div class="q-progress" id="q-progress">Fråga 1 / 25</div>
       <div class="q-points" id="q-points">⭐ 2p</div>
     </div>
+
+    <!-- MEDIA AREA -->
+    <div id="media-area" class="media-area" style="display:none">
+      <!-- YouTube audio visualizer -->
+      <div id="media-audio" class="media-audio" style="display:none">
+        <div class="sound-bars" id="sound-bars">
+          <div class="sound-bar"></div><div class="sound-bar"></div>
+          <div class="sound-bar"></div><div class="sound-bar"></div>
+          <div class="sound-bar"></div><div class="sound-bar"></div>
+          <div class="sound-bar"></div><div class="sound-bar"></div>
+          <div class="sound-bar"></div><div class="sound-bar"></div>
+          <div class="sound-bar"></div><div class="sound-bar"></div>
+        </div>
+        <div class="now-playing-text" id="now-playing-text">🎵 Spelar musik…</div>
+      </div>
+      <!-- YouTube video -->
+      <div id="media-video" class="media-video" style="display:none">
+        <div id="yt-player-container"></div>
+      </div>
+      <!-- Flag / Image -->
+      <div id="media-image" class="media-image-wrap" style="display:none">
+        <img id="media-img" src="" alt="" class="media-img">
+      </div>
+      <!-- Hidden YouTube player for audio-only mode -->
+      <div id="yt-audio-container" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden">
+        <div id="yt-audio-player"></div>
+      </div>
+      <!-- Play button -->
+      <button id="btn-play-media" class="btn-play-media" style="display:none">▶ SPELA</button>
+    </div>
+
     <div class="question-body">
       <div class="question-text" id="q-text">Frågetexten visas här…</div>
       <div class="options-grid" id="q-options"></div>
@@ -117,6 +148,7 @@
     <div class="buzz-label">BUZZADE IN!</div>
   </div>
 
+  <script src="https://www.youtube.com/iframe_api"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/js/audio.js"></script>
   <script src="/js/graphics.js"></script>

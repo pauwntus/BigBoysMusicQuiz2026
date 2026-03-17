@@ -23,10 +23,11 @@
     "id": 3,
     "type": "multiple-choice",
     "category": "🎵 Gissa Låten",
-    "question": "Vilken låt börjar med textraden: 'Friday night and the lights are low, looking out for the place to go...'?",
+    "question": "🎵 Lyssna på klippet – vilken ABBA-låt spelas?",
     "options": ["Waterloo", "Gimme! Gimme! Gimme!", "Dancing Queen", "Fernando"],
     "answer": "Dancing Queen",
     "points": 3,
+    "media": { "type": "youtube", "videoId": "xFrGuyw1V8s", "startAt": 30, "audioOnly": true },
     "explanation": "Dancing Queen av ABBA, från albumet Arrival (1976)"
   },
   {
@@ -42,11 +43,12 @@
   {
     "id": 5,
     "type": "multiple-choice",
-    "category": "🎵 Internationellt",
-    "question": "Vem sjunger låten 'Blinding Lights' (2019)?",
+    "category": "🎵 Gissa Artisten",
+    "question": "🎵 Lyssna – vem sjunger det här?",
     "options": ["Drake", "Post Malone", "The Weeknd", "Justin Bieber"],
     "answer": "The Weeknd",
     "points": 2,
+    "media": { "type": "youtube", "videoId": "4NRXx6U8ABQ", "startAt": 20, "audioOnly": true },
     "explanation": "The Weeknd med Blinding Lights – en av de bäst säljande singlarna i historien!"
   },
   {
@@ -87,6 +89,7 @@
     "options": ["Alesso", "Eric Prydz", "Avicii", "Swedish House Mafia"],
     "answer": "Avicii",
     "points": 3,
+    "media": { "type": "youtube", "videoId": "IcrbM1l_BoI", "startAt": 0, "audioOnly": true },
     "explanation": "Avicii – Tim Bergling. En av de mest älskade musikerna Sverige någonsin producerat."
   },
   {
@@ -112,11 +115,12 @@
   {
     "id": 12,
     "type": "multiple-choice",
-    "category": "🎵 Textrad",
-    "question": "Fortsätt texten: 'Never gonna give you up, never gonna let you down, never gonna run around and...'",
+    "category": "🎵 Rickroll",
+    "question": "🎵 Lyssna och svara – vad heter det nästa ord? 'Never gonna give you up, never gonna let you down, never gonna run around and...'",
     "options": ["forget you", "desert you", "leave you", "betray you"],
     "answer": "desert you",
     "points": 3,
+    "media": { "type": "youtube", "videoId": "dQw4w9WgXcQ", "startAt": 43, "audioOnly": true },
     "explanation": "Rick Astley – Never Gonna Give You Up (1987). Du har precis blivit Rickroll'd!"
   },
   {
@@ -177,6 +181,7 @@
     "options": ["It Must Have Been Love", "The Look", "Listen To Your Heart", "Joyride"],
     "answer": "Listen To Your Heart",
     "points": 3,
+    "media": { "type": "youtube", "videoId": "k2C5TjS2sh4", "startAt": 20, "audioOnly": true },
     "explanation": "Listen To Your Heart av Roxette (1988) – ett av de mest kända svenska låtarna internationellt!"
   },
   {
@@ -262,12 +267,13 @@
   {
     "id": 27,
     "type": "multiple-choice",
-    "category": "🎵 Hardrock",
-    "question": "Vilken band sjunger 'Bohemian Rhapsody'?",
+    "category": "🎵 Gissa Bandet",
+    "question": "🎵 Lyssna – vilket band spelar det här?",
     "options": ["Led Zeppelin", "Queen", "The Rolling Stones", "Deep Purple"],
     "answer": "Queen",
-    "points": 1,
-    "explanation": "Queen – Bohemian Rhapsody (1975). Skriven av Freddie Mercury och en av musikhistoriens mest komplexa hits!"
+    "points": 2,
+    "media": { "type": "youtube", "videoId": "fJ9rUzIMcZQ", "startAt": 0, "audioOnly": true },
+    "explanation": "Queen – Bohemian Rhapsody (1975). Skriven av Freddie Mercury!"
   },
   {
     "id": 28,
@@ -298,5 +304,116 @@
     "answer": "1972",
     "points": 4,
     "explanation": "ABBA grundades 1972 i Stockholm och upplöstes 1982. De återförenades 2021 med albumet Voyage!"
+  },
+
+  {
+    "id": 31,
+    "type": "multiple-choice",
+    "category": "🌍 Gissa Flaggan",
+    "question": "🚩 Vilket land tillhör den här flaggan?",
+    "options": ["Japan", "Kina", "Sydkorea", "Vietnam"],
+    "answer": "Japan",
+    "points": 2,
+    "media": { "type": "image", "url": "https://flagcdn.com/w320/jp.png", "alt": "En flagga" },
+    "explanation": "Japans flagga – Hinomaru, 'solens cirkel'. Röd cirkel på vit botten!"
+  },
+  {
+    "id": 32,
+    "type": "multiple-choice",
+    "category": "🌍 Gissa Flaggan",
+    "question": "🚩 Vilket land tillhör den här flaggan?",
+    "options": ["Portugal", "Kanada", "Djibouti", "Polen"],
+    "answer": "Kanada",
+    "points": 2,
+    "media": { "type": "image", "url": "https://flagcdn.com/w320/ca.png", "alt": "En flagga" },
+    "explanation": "Kanadas flagga med det berömda röda lönnlövet!"
+  },
+  {
+    "id": 33,
+    "type": "multiple-choice",
+    "category": "🌍 Gissa Flaggan",
+    "question": "🚩 Vilket land tillhör den här flaggan?",
+    "options": ["Argentina", "Australien", "Nya Zeeland", "Finland"],
+    "answer": "Australien",
+    "points": 3,
+    "media": { "type": "image", "url": "https://flagcdn.com/w320/au.png", "alt": "En flagga" },
+    "explanation": "Australiens flagga – med brittiska Union Jack och Södra korsets stjärnor!"
+  },
+  {
+    "id": 34,
+    "type": "multiple-choice",
+    "category": "🌍 Gissa Flaggan",
+    "question": "🚩 Vilket land tillhör den här flaggan?",
+    "options": ["Sverige", "Danmark", "Norge", "Finland"],
+    "answer": "Norge",
+    "points": 2,
+    "media": { "type": "image", "url": "https://flagcdn.com/w320/no.png", "alt": "En flagga" },
+    "explanation": "Norges flagga – ett rött fält med blått och vitt kors!"
+  },
+  {
+    "id": 35,
+    "type": "multiple-choice",
+    "category": "🌍 Gissa Flaggan",
+    "question": "🚩 Vilket land tillhör den här flaggan?",
+    "options": ["Indien", "Irland", "Brasilien", "Mexiko"],
+    "answer": "Brasilien",
+    "points": 2,
+    "media": { "type": "image", "url": "https://flagcdn.com/w320/br.png", "alt": "En flagga" },
+    "explanation": "Brasiliens flagga – med den gröna bakgrunden, gula romben och den blå sfären med stjärnor!"
+  },
+  {
+    "id": 36,
+    "type": "multiple-choice",
+    "category": "🎬 Gissa Filmen",
+    "question": "🎬 Titta på klippet – vilken film är det?",
+    "options": ["Forrest Gump", "Cast Away", "Philadelphia", "The Green Mile"],
+    "answer": "Forrest Gump",
+    "points": 3,
+    "media": { "type": "youtube", "videoId": "bLvqoijm430", "startAt": 0, "audioOnly": false },
+    "explanation": "Forrest Gump (1994) med Tom Hanks – 'Life is like a box of chocolates!'"
+  },
+  {
+    "id": 37,
+    "type": "multiple-choice",
+    "category": "🎬 Gissa Filmen",
+    "question": "🎬 Titta på klippet – vilken film är det?",
+    "options": ["Interstellar", "Gravity", "The Martian", "Inception"],
+    "answer": "Inception",
+    "points": 3,
+    "media": { "type": "youtube", "videoId": "YoHD9XEInc0", "startAt": 0, "audioOnly": false },
+    "explanation": "Inception (2010) av Christopher Nolan – 'We need to go deeper!'"
+  },
+  {
+    "id": 38,
+    "type": "multiple-choice",
+    "category": "🎬 Gissa Filmen",
+    "question": "🎬 Titta på klippet – vilken film är det?",
+    "options": ["Finding Nemo", "The Lion King", "Moana", "Ratatouille"],
+    "answer": "The Lion King",
+    "points": 2,
+    "media": { "type": "youtube", "videoId": "4cGNPlATgTM", "startAt": 0, "audioOnly": false },
+    "explanation": "The Lion King (2019) – Disneys remake av den klassiska animerade filmen!"
+  },
+  {
+    "id": 39,
+    "type": "multiple-choice",
+    "category": "🌍 Gissa Flaggan",
+    "question": "🚩 Vilket land tillhör den här flaggan?",
+    "options": ["Island", "Estland", "Finland", "Kroatien"],
+    "answer": "Island",
+    "points": 3,
+    "media": { "type": "image", "url": "https://flagcdn.com/w320/is.png", "alt": "En flagga" },
+    "explanation": "Islands flagga – blå bakgrund med rött och vitt kors. Liknande Norges men med blå som huvudfärg!"
+  },
+  {
+    "id": 40,
+    "type": "multiple-choice",
+    "category": "🎵 Gissa Låten",
+    "question": "🎵 Lyssna – vilken Michael Jackson-låt spelas?",
+    "options": ["Beat It", "Billie Jean", "Thriller", "Man in the Mirror"],
+    "answer": "Thriller",
+    "points": 3,
+    "media": { "type": "youtube", "videoId": "sOnHMHKF4RA", "startAt": 95, "audioOnly": true },
+    "explanation": "Thriller (1982) – världens mest sålda singel av alla tider! Produserades av Quincy Jones."
   }
 ]
