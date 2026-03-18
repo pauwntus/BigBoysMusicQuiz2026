@@ -9,12 +9,14 @@ const gfx = new GraphicsEngine('bgCanvas');
 gfx.start();
 let confetti = null;
 
-// TTS – Programledare med karaktär
+// ── TTS – ElevenLabs med Web Speech fallback ──────────────────────────
 let ttsVoice = null;
+let ttsAudio = null;      // aktiv ElevenLabs Audio-instans
+let elevenLabsOK = null;  // null=okänd, true=funkar, false=ej konfigurerad
+
 function initTTS() {
   const load = () => {
     const voices = speechSynthesis.getVoices();
-    // Prefer Swedish, then English
     ttsVoice = voices.find(v => v.lang === 'sv-SE')
       || voices.find(v => v.lang.startsWith('sv'))
       || voices.find(v => v.lang.startsWith('en'))
@@ -24,16 +26,42 @@ function initTTS() {
   speechSynthesis.onvoiceschanged = load;
 }
 
-function speak(text, rate = 0.88, pitch = 1.1) {
+function speakFallback(text) {
   speechSynthesis.cancel();
   if (!text) return;
   const utt = new SpeechSynthesisUtterance(text);
-  utt.lang = 'sv-SE';
-  utt.rate = rate;
-  utt.pitch = pitch;
-  utt.volume = 1;
+  utt.lang = 'sv-SE'; utt.rate = 0.88; utt.pitch = 1.1; utt.volume = 1;
   if (ttsVoice) utt.voice = ttsVoice;
   speechSynthesis.speak(utt);
+}
+
+async function speak(text) {
+  if (!text) return;
+  speechSynthesis.cancel();
+  if (ttsAudio) { ttsAudio.pause(); ttsAudio = null; }
+
+  if (elevenLabsOK === false) { speakFallback(text); return; }
+
+  try {
+    const res = await fetch('/api/tts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
+    });
+    if (res.status === 503) { elevenLabsOK = false; speakFallback(text); return; }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    elevenLabsOK = true;
+    const blob = await res.blob();
+    const url  = URL.createObjectURL(blob);
+    ttsAudio = new Audio(url);
+    ttsAudio.onended = () => URL.revokeObjectURL(url);
+    ttsAudio.play();
+  } catch (e) {
+    console.warn('ElevenLabs TTS fel, faller tillbaka:', e.message);
+    if (elevenLabsOK !== true) elevenLabsOK = false;
+    speakFallback(text);
+  }
 }
 
 function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }

@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -388,6 +389,64 @@ function revealAnswer() {
   gameState.phase = 'reveal';
   broadcast();
 }
+
+// ── ElevenLabs TTS proxy ─────────────────────────────────────────────────
+app.use(express.json());
+const ttsCache = new Map(); // text → Buffer
+
+app.post('/api/tts', async (req, res) => {
+  const { text } = req.body || {};
+  if (!text) return res.status(400).json({ error: 'text saknas' });
+
+  const apiKey = process.env.ELEVENLABS_API_KEY;
+  if (!apiKey || apiKey === 'din_nyckel_här') {
+    return res.status(503).json({ error: 'ELEVENLABS_API_KEY inte konfigurerad' });
+  }
+
+  const cacheKey = text.trim().toLowerCase();
+  if (ttsCache.has(cacheKey)) {
+    res.set('Content-Type', 'audio/mpeg');
+    return res.send(ttsCache.get(cacheKey));
+  }
+
+  const voiceId = process.env.ELEVENLABS_VOICE_ID || 'pNInz6obpgDQGcFmaJgB';
+  const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`;
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'xi-api-key': apiKey,
+        'Content-Type': 'application/json',
+        'Accept': 'audio/mpeg',
+      },
+      body: JSON.stringify({
+        text,
+        model_id: 'eleven_multilingual_v2',
+        voice_settings: {
+          stability: 0.45,
+          similarity_boost: 0.80,
+          style: 0.35,
+          use_speaker_boost: true,
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      const err = await response.text();
+      console.error('ElevenLabs fel:', response.status, err);
+      return res.status(response.status).json({ error: err });
+    }
+
+    const buffer = Buffer.from(await response.arrayBuffer());
+    ttsCache.set(cacheKey, buffer);   // cache i minne under körning
+    res.set('Content-Type', 'audio/mpeg');
+    res.send(buffer);
+  } catch (e) {
+    console.error('TTS fetch-fel:', e.message);
+    res.status(500).json({ error: e.message });
+  }
+});
 
 // HTTP routes
 app.get('/api/qr', async (req, res) => {
