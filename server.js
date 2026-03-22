@@ -264,26 +264,21 @@ io.on('connection', (socket) => {
     gameState.answers = {};
     gameState.phase = 'question';
     broadcast();
+    // Waits for host:ready_for_buzz before opening for answers
+  });
 
-    // After displaying question for a few seconds, open for answers
+  // Host signals that the question intro is done – now open for answers
+  socket.on('host:ready_for_buzz', () => {
+    if (gameState.phase !== 'question') return;
+    const q = activeQuestions[gameState.questionIndex];
+    if (!q) return;
+    gameState.phase = 'buzz_open';
+    broadcast();
     if (q.type === 'multiple-choice') {
-      setTimeout(() => {
-        gameState.phase = 'buzz_open';
-        broadcast();
-        scheduleBotAnswers();
-        startTimer(20, null, () => {
-          // Time's up - auto reveal
-          revealAnswer();
-        });
-      }, 4000);
+      scheduleBotAnswers();
+      startTimer(20, null, () => { revealAnswer(); });
     } else if (q.type === 'buzz') {
-      setTimeout(() => {
-        gameState.phase = 'buzz_open';
-        broadcast();
-        startTimer(30, null, () => {
-          revealAnswer();
-        });
-      }, 4000);
+      startTimer(30, null, () => { revealAnswer(); });
     }
   });
 

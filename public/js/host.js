@@ -687,21 +687,26 @@ socket.on('state', (state) => {
           qText.style.opacity = '1';
           qOpts.style.opacity = '1';
           setAvatarPosition('corner'); // flytta till hörnet
-          speak(q.question);
+          await speak(q.question);
+          socket.emit('host:ready_for_buzz');
         }, 600);
       } else if (isMusic) {
         setAvatarPosition('corner');
         audio.playMusicJingle();
         const intro = pick(HOST.musicIntros);
-        setTimeout(() => {
-          speak(`${intro} ${q?.question || ''}`, 0.86, 1.15);
+        setTimeout(async () => {
+          await speak(`${intro} ${q?.question || ''}`, 0.86, 1.15);
+          socket.emit('host:ready_for_buzz');
         }, 900);
       } else {
         setAvatarPosition('corner');
         const roundAnnounce = questionIndex === 0 ? 'Fråga nummer ett!' :
           questionIndex % 5 === 0 ? `Ny runda! Fråga nummer ${questionIndex + 1}!` :
           `${pick(HOST.intros)} Fråga ${questionIndex + 1}.`;
-        speak(`${roundAnnounce} ${q?.question || ''}`, 0.87);
+        (async () => {
+          await speak(`${roundAnnounce} ${q?.question || ''}`, 0.87);
+          socket.emit('host:ready_for_buzz');
+        })();
       }
       prevIndex = questionIndex;
     }
