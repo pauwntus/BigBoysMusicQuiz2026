@@ -57,7 +57,8 @@ async function speak(text) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text }),
     });
-    if (res.status === 503) { elevenLabsOK = false; return speakFallback(text); }
+    // 503 = ej konfigurerad, 401 = kvot slut – byt permanent till fallback
+    if (res.status === 503 || res.status === 401) { elevenLabsOK = false; return speakFallback(text); }
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
     elevenLabsOK = true;
