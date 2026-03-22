@@ -13,6 +13,7 @@ let confetti = null;
 let ttsVoice = null;
 let ttsAudio = null;      // aktiv ElevenLabs Audio-instans
 let elevenLabsOK = null;  // null=okänd, true=funkar, false=ej konfigurerad
+let ttsResolve = null;    // löser aktiv speak()-promise vid avbrott
 
 function initTTS() {
   const load = () => {
@@ -27,20 +28,28 @@ function initTTS() {
 }
 
 function speakFallback(text) {
-  speechSynthesis.cancel();
-  if (!text) return;
-  const utt = new SpeechSynthesisUtterance(text);
-  utt.lang = 'sv-SE'; utt.rate = 0.88; utt.pitch = 1.1; utt.volume = 1;
-  if (ttsVoice) utt.voice = ttsVoice;
-  speechSynthesis.speak(utt);
+  return new Promise((resolve) => {
+    speechSynthesis.cancel();
+    if (!text) { resolve(); return; }
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.lang = 'sv-SE'; utt.rate = 0.88; utt.pitch = 1.1; utt.volume = 1;
+    if (ttsVoice) utt.voice = ttsVoice;
+    utt.onend = () => { stopTalking(); resolve(); };
+    utt.onerror = () => { stopTalking(); resolve(); };
+    startTalking();
+    speechSynthesis.speak(utt);
+  });
 }
 
 async function speak(text) {
   if (!text) return;
   speechSynthesis.cancel();
   if (ttsAudio) { ttsAudio.pause(); ttsAudio = null; }
+  // Resolve any pending promise so awaiting code can continue
+  if (ttsResolve) { ttsResolve(); ttsResolve = null; }
+  stopTalking();
 
-  if (elevenLabsOK === false) { speakFallback(text); return; }
+  if (elevenLabsOK === false) { return speakFallback(text); }
 
   try {
     const res = await fetch('/api/tts', {
@@ -48,20 +57,81 @@ async function speak(text) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text }),
     });
-    if (res.status === 503) { elevenLabsOK = false; speakFallback(text); return; }
+    if (res.status === 503) { elevenLabsOK = false; return speakFallback(text); }
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
     elevenLabsOK = true;
     const blob = await res.blob();
     const url  = URL.createObjectURL(blob);
-    ttsAudio = new Audio(url);
-    ttsAudio.onended = () => URL.revokeObjectURL(url);
-    ttsAudio.play();
+
+    return new Promise((resolve) => {
+      ttsResolve = resolve;
+      ttsAudio = new Audio(url);
+      ttsAudio.onended = () => { URL.revokeObjectURL(url); ttsResolve = null; stopTalking(); resolve(); };
+      ttsAudio.onerror = () => { URL.revokeObjectURL(url); ttsResolve = null; stopTalking(); resolve(); };
+      startTalking();
+      ttsAudio.play();
+    });
   } catch (e) {
     console.warn('ElevenLabs TTS fel, faller tillbaka:', e.message);
     if (elevenLabsOK !== true) elevenLabsOK = false;
-    speakFallback(text);
+    return speakFallback(text);
   }
+}
+
+// ── Programledarfigur – mun & blinkning ───────────────────────────────
+let talkingTimer = null;
+let mouthOpen = false;
+
+function startTalking() {
+  if (talkingTimer) return;
+  mouthOpen = false;
+  talkingTimer = setInterval(() => {
+    mouthOpen = !mouthOpen;
+    const mo = document.getElementById('avatar-mouth-open');
+    const mc = document.getElementById('avatar-mouth-closed');
+    if (mo) mo.setAttribute('display', mouthOpen ? '' : 'none');
+    if (mc) mc.style.display = mouthOpen ? 'none' : '';
+  }, 120);
+}
+
+function stopTalking() {
+  clearInterval(talkingTimer);
+  talkingTimer = null;
+  mouthOpen = false;
+  const mo = document.getElementById('avatar-mouth-open');
+  const mc = document.getElementById('avatar-mouth-closed');
+  if (mo) mo.setAttribute('display', 'none');
+  if (mc) mc.style.display = '';
+}
+
+function setAvatarPosition(pos) { // 'center' | 'corner'
+  const el = document.getElementById('host-avatar');
+  if (!el) return;
+  el.classList.toggle('host-avatar--center', pos === 'center');
+  el.classList.toggle('host-avatar--corner', pos === 'corner');
+}
+
+function ensureQuestionVisible() {
+  const qText = document.getElementById('q-text');
+  const qOpts = document.getElementById('q-options');
+  if (qText) qText.style.opacity = '1';
+  if (qOpts) qOpts.style.opacity = '1';
+}
+
+function initBlink() {
+  function doBlink() {
+    const l = document.getElementById('eyelid-l');
+    const r = document.getElementById('eyelid-r');
+    if (l) l.setAttribute('ry', '9');
+    if (r) r.setAttribute('ry', '9');
+    setTimeout(() => {
+      if (l) l.setAttribute('ry', '1');
+      if (r) r.setAttribute('ry', '1');
+      setTimeout(doBlink, 2500 + Math.random() * 4000);
+    }, 130);
+  }
+  setTimeout(doBlink, 1000 + Math.random() * 2000);
 }
 
 function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
@@ -109,6 +179,7 @@ const HOST = {
 };
 
 initTTS();
+initBlink();
 
 // ── YouTube IFrame API ─────────────────────────────
 let ytVideoPlayer = null;
@@ -580,11 +651,13 @@ socket.on('state', (state) => {
     if (phase === 'lobby') {
       showScreen('lobby');
       audio.startLobbyMusic();
+      setAvatarPosition('center');
     }
 
     if (phase === 'countdown' && prevPhase === 'lobby') {
       showScreen('countdown');
       audio.stopLobbyMusic();
+      setAvatarPosition('center');
       runCountdown(3);
     }
 
@@ -600,17 +673,30 @@ socket.on('state', (state) => {
       if (musicBanner) musicBanner.style.display = isMusic ? 'flex' : 'none';
 
       if (q?.funnyIntro) {
-        // AI-generated funny intro – speak it then the question
-        setTimeout(() => {
-          speak(`${q.funnyIntro} ${q?.question || ''}`);
-        }, 900);
+        // Göm frågetexten tills introt är klart
+        const qText = document.getElementById('q-text');
+        const qOpts = document.getElementById('q-options');
+        qText.style.opacity = '0';
+        qOpts.style.opacity = '0';
+        setAvatarPosition('center'); // stor figur under intro
+
+        setTimeout(async () => {
+          await speak(q.funnyIntro);
+          // Visa frågan efter introt
+          qText.style.opacity = '1';
+          qOpts.style.opacity = '1';
+          setAvatarPosition('corner'); // flytta till hörnet
+          speak(q.question);
+        }, 600);
       } else if (isMusic) {
+        setAvatarPosition('corner');
         audio.playMusicJingle();
         const intro = pick(HOST.musicIntros);
         setTimeout(() => {
           speak(`${intro} ${q?.question || ''}`, 0.86, 1.15);
         }, 900);
       } else {
+        setAvatarPosition('corner');
         const roundAnnounce = questionIndex === 0 ? 'Fråga nummer ett!' :
           questionIndex % 5 === 0 ? `Ny runda! Fråga nummer ${questionIndex + 1}!` :
           `${pick(HOST.intros)} Fråga ${questionIndex + 1}.`;
@@ -620,6 +706,7 @@ socket.on('state', (state) => {
     }
 
     if (phase === 'buzz_open' && !buzzedBy) {
+      ensureQuestionVisible(); // visa frågan om intro fortfarande pågår
       hideBuzz();
       if (currentQuestion?.type === 'multiple-choice') {
         audio.playTensionLoop(20);
@@ -627,6 +714,7 @@ socket.on('state', (state) => {
     }
 
     if (phase === 'buzz_claimed' && buzzedBy && buzzedBy !== prevBuzzedBy) {
+      ensureQuestionVisible();
       const player = players[buzzedBy];
       if (player) showBuzz(player.name, player.color);
     }
@@ -638,11 +726,13 @@ socket.on('state', (state) => {
       setTimeout(() => {
         renderReveal(state);
         showScreen('reveal');
+        setAvatarPosition('center');
         speakRevealCommentary(state);
       }, 900);
     }
 
     if (phase === 'game_over') {
+      setAvatarPosition('center');
       showScreen('gameover');
       renderGameOver(players);
     }

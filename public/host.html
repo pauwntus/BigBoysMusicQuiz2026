@@ -9,6 +9,64 @@
 <body>
   <canvas id="bgCanvas"></canvas>
 
+  <!-- ── Programledarfigur ───────────────────────────────── -->
+  <div id="host-avatar" class="host-avatar host-avatar--center" aria-hidden="true">
+    <svg class="avatar-svg" viewBox="0 0 100 160" xmlns="http://www.w3.org/2000/svg">
+      <!-- Hår (bak) -->
+      <ellipse cx="50" cy="32" rx="28" ry="15" fill="#2c1a0e"/>
+      <!-- Huvud -->
+      <circle cx="50" cy="52" r="28" fill="#FDBCB4"/>
+      <!-- Hår (front) -->
+      <ellipse cx="50" cy="27" rx="24" ry="11" fill="#2c1a0e"/>
+      <!-- Öron -->
+      <ellipse cx="22" cy="52" rx="5" ry="7" fill="#F5A090"/>
+      <ellipse cx="78" cy="52" rx="5" ry="7" fill="#F5A090"/>
+      <!-- Ögonvitor -->
+      <ellipse cx="37" cy="49" rx="8" ry="9" fill="white"/>
+      <ellipse cx="63" cy="49" rx="8" ry="9" fill="white"/>
+      <!-- Pupiller -->
+      <circle cx="38" cy="50" r="5.5" fill="#110800"/>
+      <circle cx="64" cy="50" r="5.5" fill="#110800"/>
+      <!-- Glans i ögonen -->
+      <circle cx="40" cy="48" r="2" fill="white"/>
+      <circle cx="66" cy="48" r="2" fill="white"/>
+      <!-- Ögonlock (för blinkning) -->
+      <ellipse id="eyelid-l" cx="37" cy="44" rx="8.5" ry="1" fill="#FDBCB4"/>
+      <ellipse id="eyelid-r" cx="63" cy="44" rx="8.5" ry="1" fill="#FDBCB4"/>
+      <!-- Ögonbryn -->
+      <path d="M 29 41 Q 37 37 45 41" stroke="#2c1a0e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M 55 41 Q 63 37 71 41" stroke="#2c1a0e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <!-- Näsa -->
+      <ellipse cx="50" cy="58" rx="3.5" ry="2.5" fill="#E8907A" opacity="0.5"/>
+      <!-- Mun – stängd (leende, standard) -->
+      <path id="avatar-mouth-closed" d="M 41 67 Q 50 75 59 67" stroke="#b04040" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <!-- Mun – öppen (pratar) – dold som standard -->
+      <g id="avatar-mouth-open" display="none">
+        <ellipse cx="50" cy="69" rx="9" ry="6" fill="#6b1515"/>
+        <rect x="43" y="65" width="14" height="4" rx="2" fill="#fffafa" opacity="0.9"/>
+      </g>
+      <!-- Hals -->
+      <rect x="44" y="78" width="12" height="10" fill="#FDBCB4"/>
+      <!-- Kostymkropp -->
+      <path d="M 12 102 L 12 160 L 88 160 L 88 102 L 68 88 L 50 88 L 32 88 Z" fill="#1e3a5f"/>
+      <!-- Skjorta -->
+      <polygon points="50,88 41,101 41,138 59,138 59,101" fill="white"/>
+      <!-- Kavajer (revers) -->
+      <polygon points="50,88 12,110 23,88" fill="#152c4a"/>
+      <polygon points="50,88 88,110 77,88" fill="#152c4a"/>
+      <!-- Slips -->
+      <polygon points="47,101 53,101 51,125 49,125" fill="#f59e0b"/>
+      <polygon points="49,125 51,125 50,131" fill="#d97706"/>
+      <!-- Knappar -->
+      <circle cx="50" cy="141" r="2.2" fill="#c8d8e8"/>
+      <circle cx="50" cy="150" r="2.2" fill="#c8d8e8"/>
+      <!-- Guldnål på kavajen -->
+      <circle cx="27" cy="104" r="4.5" fill="#f59e0b"/>
+      <circle cx="27" cy="104" r="2.5" fill="#d97706"/>
+      <circle cx="27" cy="104" r="1" fill="#fbbf24"/>
+    </svg>
+  </div>
+
   <!-- LOBBY -->
   <div id="screen-lobby" class="screen active">
     <div class="lobby-content">
