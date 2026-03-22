@@ -6,6 +6,7 @@ const QRCode = require('qrcode');
 const os = require('os');
 const fs = require('fs');
 const path = require('path');
+const Anthropic = require('@anthropic-ai/sdk');
 
 const app = express();
 const server = http.createServer(app);
@@ -13,8 +14,10 @@ const io = new Server(server, { cors: { origin: '*' } });
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Load questions
-const questions = JSON.parse(fs.readFileSync(path.join(__dirname, 'questions.json'), 'utf8'));
+// Load default questions (music quiz)
+const defaultQuestions = JSON.parse(fs.readFileSync(path.join(__dirname, 'questions.json'), 'utf8'));
+// activeQuestions can be swapped to trivia questions during a session
+let activeQuestions = defaultQuestions;
 
 // Allowed emoji list (security: only allow from this set)
 const ALLOWED_EMOJIS = new Set([
@@ -32,7 +35,7 @@ let gameState = {
   answers: {},      // socketId -> { answer, time, correct }
   timer: 0,
   round: 0,
-  totalQuestions: questions.length,
+  totalQuestions: activeQuestions.length,
   testMode: false,
 };
 
@@ -61,7 +64,7 @@ function addBots() {
 
 function scheduleBotAnswers() {
   if (!gameState.testMode) return;
-  const q = questions[gameState.questionIndex];
+  const q = activeQuestions[gameState.questionIndex];
   if (!q || q.type !== 'multiple-choice') return;
 
   const bots = Object.entries(gameState.players).filter(([, p]) => p.isBot && p.connected);
@@ -243,13 +246,13 @@ io.on('connection', (socket) => {
   socket.on('host:next', () => {
     stopTimer();
     gameState.questionIndex++;
-    if (gameState.questionIndex >= questions.length) {
+    if (gameState.questionIndex >= activeQuestions.length) {
       gameState.phase = 'game_over';
       broadcast();
       return;
     }
 
-    const q = questions[gameState.questionIndex];
+    const q = activeQuestions[gameState.questionIndex];
     gameState.currentQuestion = {
       ...q,
       // Don't send answer to clients initially
@@ -301,7 +304,7 @@ io.on('connection', (socket) => {
     if (!gameState.players[socket.id]) return;
     if (gameState.answers[socket.id]) return; // already answered
 
-    const q = questions[gameState.questionIndex];
+    const q = activeQuestions[gameState.questionIndex];
     const correct = data.answer === q.answer;
     const points = correct ? (q.points || 2) : 0;
 
@@ -329,7 +332,7 @@ io.on('connection', (socket) => {
   // Host marks buzz answer as correct
   socket.on('host:correct', () => {
     if (!gameState.buzzedBy) return;
-    const q = questions[gameState.questionIndex];
+    const q = activeQuestions[gameState.questionIndex];
     const points = q.points || 3;
     gameState.players[gameState.buzzedBy].score += points;
     gameState.answers[gameState.buzzedBy] = { correct: true, points };
@@ -353,9 +356,19 @@ io.on('connection', (socket) => {
     revealAnswer();
   });
 
+  // Host loads trivia questions (replaces default questions for this session)
+  socket.on('host:load_trivia', (triviaQuestions) => {
+    if (!Array.isArray(triviaQuestions) || triviaQuestions.length === 0) return;
+    activeQuestions = triviaQuestions;
+    gameState.totalQuestions = triviaQuestions.length;
+    console.log(`[trivia] Laddade ${triviaQuestions.length} triviafrågor`);
+    broadcast();
+  });
+
   // Host resets to lobby
   socket.on('host:reset', () => {
     stopTimer();
+    activeQuestions = defaultQuestions;
     gameState = {
       phase: 'lobby',
       players: {},
@@ -365,7 +378,7 @@ io.on('connection', (socket) => {
       answers: {},
       timer: 0,
       round: 0,
-      totalQuestions: questions.length,
+      totalQuestions: activeQuestions.length,
       testMode: false,
     };
     broadcast();
@@ -381,7 +394,7 @@ io.on('connection', (socket) => {
 });
 
 function revealAnswer() {
-  const q = questions[gameState.questionIndex];
+  const q = activeQuestions[gameState.questionIndex];
   if (gameState.currentQuestion) {
     gameState.currentQuestion.answer = q.answer;
     gameState.currentQuestion.explanation = q.explanation || null;
@@ -392,6 +405,121 @@ function revealAnswer() {
 
 // ── ElevenLabs TTS proxy ─────────────────────────────────────────────────
 app.use(express.json());
+
+// ── Trivia Questions (Open Trivia DB + Claude commentary) ─────────────────
+function decodeHtmlEntities(str) {
+  return str
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#039;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&ldquo;/g, '"')
+    .replace(/&rdquo;/g, '"')
+    .replace(/&lsquo;/g, "'")
+    .replace(/&rsquo;/g, "'")
+    .replace(/&hellip;/g, '…')
+    .replace(/&ndash;/g, '–')
+    .replace(/&mdash;/g, '—');
+}
+
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+async function fetchTriviaWithCommentary(amount = 10) {
+  // 1. Fetch from Open Trivia DB
+  const triviaRes = await fetch(`https://opentdb.com/api.php?amount=${amount}&type=multiple`);
+  if (!triviaRes.ok) throw new Error(`opentdb svarade ${triviaRes.status}`);
+  const triviaData = await triviaRes.json();
+  if (triviaData.response_code !== 0 || !triviaData.results?.length) {
+    throw new Error('opentdb returnerade inga frågor');
+  }
+
+  // 2. Format questions
+  const formatted = triviaData.results.map((item, i) => {
+    const question = decodeHtmlEntities(item.question);
+    const correct = decodeHtmlEntities(item.correct_answer);
+    const options = shuffleArray([
+      correct,
+      ...item.incorrect_answers.map(decodeHtmlEntities),
+    ]);
+    return {
+      id: 1000 + i,
+      type: 'multiple-choice',
+      category: `🌍 ${decodeHtmlEntities(item.category)}`,
+      question,
+      options,
+      answer: correct,
+      points: item.difficulty === 'hard' ? 3 : item.difficulty === 'medium' ? 2 : 1,
+      explanation: '',
+      funnyIntro: null,
+      funnyOutro: null,
+    };
+  });
+
+  // 3. Generate funny Swedish commentary with Claude (if API key available)
+  const anthropicKey = process.env.ANTHROPIC_API_KEY;
+  if (anthropicKey && anthropicKey !== 'din_anthropic_nyckel_här') {
+    try {
+      const client = new Anthropic({ apiKey: anthropicKey });
+
+      const questionList = formatted
+        .map((q, i) => `${i + 1}. Fråga: "${q.question}" | Rätt svar: "${q.answer}"`)
+        .join('\n');
+
+      const msg = await client.messages.create({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 2048,
+        messages: [{
+          role: 'user',
+          content: `Du är en rolig och energisk svensk quizvärd. För varje fråga nedan, skriv:
+- "intro": En rolig, entusiastisk introduktion PÅ SVENSKA (1-2 meningar) som bygger upp spänning INNAN frågan ställs. Var kreativ, humoristisk och engagerande!
+- "outro": En rolig kommentar PÅ SVENSKA (1-2 meningar) som reagerar på att svaret avslöjas. Kan vara häpnad, ironi, uppmuntran eller ett roligt faktum.
+
+Frågorna:
+${questionList}
+
+Svara ENBART med giltig JSON-array (inga kodblock, ingen extra text):
+[{"intro":"...","outro":"..."},...]`,
+        }],
+      });
+
+      const raw = msg.content[0]?.text?.trim() || '[]';
+      const commentary = JSON.parse(raw);
+
+      commentary.forEach((c, i) => {
+        if (formatted[i]) {
+          formatted[i].funnyIntro = c.intro || null;
+          formatted[i].funnyOutro = c.outro || null;
+        }
+      });
+      console.log(`[trivia] Claude genererade kommentarer för ${commentary.length} frågor`);
+    } catch (e) {
+      console.warn('[trivia] Claude-kommentarer misslyckades:', e.message);
+    }
+  } else {
+    console.log('[trivia] ANTHROPIC_API_KEY ej konfigurerad – hoppar över AI-kommentarer');
+  }
+
+  return formatted;
+}
+
+app.get('/api/trivia-questions', async (req, res) => {
+  try {
+    const questions = await fetchTriviaWithCommentary(10);
+    res.json({ questions });
+  } catch (e) {
+    console.error('[trivia] Fel:', e.message);
+    res.status(500).json({ error: e.message });
+  }
+});
 const ttsCache = new Map(); // text → Buffer
 
 app.post('/api/tts', async (req, res) => {

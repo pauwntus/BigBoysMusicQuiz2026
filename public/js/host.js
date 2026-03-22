@@ -222,13 +222,22 @@ function speakRevealCommentary(state) {
   const total = connected.length;
   const ans = state.currentQuestion?.answer || '';
   const expl = state.currentQuestion?.explanation || '';
+  const funnyOutro = state.currentQuestion?.funnyOutro;
 
-  let phrase;
-  if (correct === total && total > 0) phrase = pick(HOST.allCorrect);
-  else if (correct === 0) phrase = pick(HOST.noneCorrect);
-  else phrase = pick(HOST.someCorrect);
-
-  speak(`Rätt svar: ${ans}. ${phrase} ${expl}`, 0.86, 1.12);
+  if (funnyOutro) {
+    // AI-generated outro after revealing the answer
+    let scoreSummary;
+    if (correct === total && total > 0) scoreSummary = 'Alla hade rätt!';
+    else if (correct === 0) scoreSummary = 'Ingen hade rätt!';
+    else scoreSummary = `${correct} av ${total} hade rätt.`;
+    speak(`Rätt svar: ${ans}. ${scoreSummary} ${funnyOutro}`);
+  } else {
+    let phrase;
+    if (correct === total && total > 0) phrase = pick(HOST.allCorrect);
+    else if (correct === 0) phrase = pick(HOST.noneCorrect);
+    else phrase = pick(HOST.someCorrect);
+    speak(`Rätt svar: ${ans}. ${phrase} ${expl}`, 0.86, 1.12);
+  }
 }
 audio.init();
 
@@ -278,6 +287,30 @@ document.getElementById('btn-test-mode').addEventListener('click', (e) => {
   socket.emit('host:test_mode');
   e.target.disabled = true;
   e.target.textContent = '🤖 Bottar anslutna!';
+});
+
+document.getElementById('btn-load-trivia').addEventListener('click', async (e) => {
+  const btn = e.target;
+  const status = document.getElementById('trivia-status');
+  btn.disabled = true;
+  btn.textContent = '⏳ Hämtar frågor…';
+  status.style.display = 'block';
+  status.textContent = '🌐 Ansluter till Open Trivia DB…';
+
+  try {
+    const res = await fetch('/api/trivia-questions');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const { questions } = await res.json();
+
+    status.textContent = `✅ ${questions.length} triviafrågor laddade${questions[0]?.funnyIntro ? ' med AI-kommentarer!' : '!'}`;
+    btn.textContent = `🎲 ${questions.length} frågor laddade!`;
+
+    socket.emit('host:load_trivia', questions);
+  } catch (err) {
+    status.textContent = `❌ Misslyckades: ${err.message}`;
+    btn.disabled = false;
+    btn.textContent = '🎲 Ladda triviafrågör (AI)';
+  }
 });
 
 function updateLobby(players) {
@@ -557,7 +590,12 @@ socket.on('state', (state) => {
       const musicBanner = document.getElementById('music-banner');
       if (musicBanner) musicBanner.style.display = isMusic ? 'flex' : 'none';
 
-      if (isMusic) {
+      if (q?.funnyIntro) {
+        // AI-generated funny intro – speak it then the question
+        setTimeout(() => {
+          speak(`${q.funnyIntro} ${q?.question || ''}`);
+        }, 900);
+      } else if (isMusic) {
         audio.playMusicJingle();
         const intro = pick(HOST.musicIntros);
         setTimeout(() => {
