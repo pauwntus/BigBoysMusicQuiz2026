@@ -442,73 +442,100 @@ async function fetchTriviaWithCommentary(amount = 10) {
     throw new Error('opentdb returnerade inga frågor');
   }
 
-  // 2. Format questions
-  const formatted = triviaData.results.map((item, i) => {
+  // 2. Decode raw items (keep original order for Claude mapping)
+  const rawItems = triviaData.results.map((item, i) => {
     const question = decodeHtmlEntities(item.question);
     const correct = decodeHtmlEntities(item.correct_answer);
-    const options = shuffleArray([
+    const allOptions = shuffleArray([
       correct,
       ...item.incorrect_answers.map(decodeHtmlEntities),
     ]);
     return {
       id: 1000 + i,
-      type: 'multiple-choice',
-      category: `🌍 ${decodeHtmlEntities(item.category)}`,
+      difficulty: item.difficulty,
+      category: decodeHtmlEntities(item.category),
       question,
-      options,
+      options: allOptions,
       answer: correct,
-      points: item.difficulty === 'hard' ? 3 : item.difficulty === 'medium' ? 2 : 1,
-      explanation: '',
-      funnyIntro: null,
-      funnyOutro: null,
     };
   });
 
-  // 3. Generate funny Swedish commentary with Claude (if API key available)
+  // 3. Use Claude to translate + generate commentary in one call (if API key available)
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
   if (anthropicKey && anthropicKey !== 'din_anthropic_nyckel_här') {
     try {
       const client = new Anthropic({ apiKey: anthropicKey });
 
-      const questionList = formatted
-        .map((q, i) => `${i + 1}. Fråga: "${q.question}" | Rätt svar: "${q.answer}"`)
-        .join('\n');
+      const inputJson = JSON.stringify(rawItems.map(q => ({
+        question: q.question,
+        options: q.options,
+        answer: q.answer,
+        category: q.category,
+      })));
 
       const msg = await client.messages.create({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 2048,
+        model: 'claude-haiku-4-5',
+        max_tokens: 4096,
         messages: [{
           role: 'user',
-          content: `Du är en rolig och energisk svensk quizvärd. För varje fråga nedan, skriv:
-- "intro": En rolig, entusiastisk introduktion PÅ SVENSKA (1-2 meningar) som bygger upp spänning INNAN frågan ställs. Var kreativ, humoristisk och engagerande!
-- "outro": En rolig kommentar PÅ SVENSKA (1-2 meningar) som reagerar på att svaret avslöjas. Kan vara häpnad, ironi, uppmuntran eller ett roligt faktum.
+          content: `Du är en rolig och energisk svensk quizvärd. Du får ${rawItems.length} triviafrågor på engelska.
 
-Frågorna:
-${questionList}
+Ditt uppdrag för varje fråga:
+1. "question": Översätt frågan till naturlig svenska
+2. "options": Översätt ALLA svarsalternativ till svenska (bevara samma ordning)
+3. "answer": Översätt det rätta svaret till svenska (måste matcha exakt ett av "options")
+4. "intro": Skriv en rolig, KONTEXTSPECIFIK introduktion PÅ SVENSKA (1-2 meningar) som bygger upp spänning och refererar till frågans ämne. Inte generisk – nämn vad frågan handlar om!
+5. "outro": Skriv en rolig KONTEXTSPECIFIK kommentar PÅ SVENSKA (1-2 meningar) om det rätta svaret. Kan vara ett fascinerande faktum, ironi eller humor kopplat till just det svaret.
 
-Svara ENBART med giltig JSON-array (inga kodblock, ingen extra text):
-[{"intro":"...","outro":"..."},...]`,
+Frågorna (JSON):
+${inputJson}
+
+Svara ENBART med giltig JSON-array utan kodblock eller extra text:
+[{"question":"...","options":["...","...","...","..."],"answer":"...","intro":"...","outro":"..."},...]`,
         }],
       });
 
       const raw = msg.content[0]?.text?.trim() || '[]';
-      const commentary = JSON.parse(raw);
+      const translated = JSON.parse(raw);
 
-      commentary.forEach((c, i) => {
-        if (formatted[i]) {
-          formatted[i].funnyIntro = c.intro || null;
-          formatted[i].funnyOutro = c.outro || null;
-        }
+      const formatted = rawItems.map((item, i) => {
+        const t = translated[i] || {};
+        return {
+          id: item.id,
+          type: 'multiple-choice',
+          category: `🌍 ${item.category}`,
+          question: t.question || item.question,
+          options: t.options || item.options,
+          answer: t.answer || item.answer,
+          points: item.difficulty === 'hard' ? 3 : item.difficulty === 'medium' ? 2 : 1,
+          explanation: '',
+          funnyIntro: t.intro || null,
+          funnyOutro: t.outro || null,
+        };
       });
-      console.log(`[trivia] Claude genererade kommentarer för ${commentary.length} frågor`);
+
+      console.log(`[trivia] Claude översatte och kommenterade ${translated.length} frågor`);
+      return formatted;
     } catch (e) {
-      console.warn('[trivia] Claude-kommentarer misslyckades:', e.message);
+      console.warn('[trivia] Claude-anrop misslyckades, returnerar engelska frågor:', e.message);
     }
   } else {
-    console.log('[trivia] ANTHROPIC_API_KEY ej konfigurerad – hoppar över AI-kommentarer');
+    console.log('[trivia] ANTHROPIC_API_KEY ej konfigurerad – returnerar engelska frågor utan kommentarer');
   }
 
-  return formatted;
+  // Fallback: return untranslated English questions without commentary
+  return rawItems.map(item => ({
+    id: item.id,
+    type: 'multiple-choice',
+    category: `🌍 ${item.category}`,
+    question: item.question,
+    options: item.options,
+    answer: item.answer,
+    points: item.difficulty === 'hard' ? 3 : item.difficulty === 'medium' ? 2 : 1,
+    explanation: '',
+    funnyIntro: null,
+    funnyOutro: null,
+  }));
 }
 
 app.get('/api/trivia-questions', async (req, res) => {
