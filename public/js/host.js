@@ -300,9 +300,18 @@ document.getElementById('btn-load-trivia').addEventListener('click', async (e) =
   try {
     const res = await fetch('/api/trivia-questions');
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const { questions } = await res.json();
+    const { questions, aiUsed, claudeError } = await res.json();
 
-    status.textContent = `✅ ${questions.length} triviafrågor laddade${questions[0]?.funnyIntro ? ' med AI-kommentarer!' : '!'}`;
+    if (aiUsed) {
+      status.textContent = `✅ ${questions.length} triviafrågor laddade med AI-kommentarer!`;
+      status.style.color = '#22c55e';
+    } else if (claudeError) {
+      status.textContent = `⚠️ Frågor laddade (engelska) – Claude-fel: ${claudeError}`;
+      status.style.color = '#f59e0b';
+    } else {
+      status.textContent = `⚠️ Frågor laddade (engelska) – ANTHROPIC_API_KEY saknas i .env`;
+      status.style.color = '#f59e0b';
+    }
     btn.textContent = `🎲 ${questions.length} frågor laddade!`;
 
     socket.emit('host:load_trivia', questions);

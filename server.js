@@ -517,7 +517,22 @@ Svara ENBART med giltig JSON-array utan kodblock eller extra text:
       console.log(`[trivia] Claude översatte och kommenterade ${translated.length} frågor`);
       return formatted;
     } catch (e) {
-      console.warn('[trivia] Claude-anrop misslyckades, returnerar engelska frågor:', e.message);
+      console.warn('[trivia] Claude-anrop misslyckades:', e.message);
+      // Attach error to fallback so client can surface it
+      const fallback = rawItems.map(item => ({
+        id: item.id,
+        type: 'multiple-choice',
+        category: `🌍 ${item.category}`,
+        question: item.question,
+        options: item.options,
+        answer: item.answer,
+        points: item.difficulty === 'hard' ? 3 : item.difficulty === 'medium' ? 2 : 1,
+        explanation: '',
+        funnyIntro: null,
+        funnyOutro: null,
+      }));
+      fallback._claudeError = e.message;
+      return fallback;
     }
   } else {
     console.log('[trivia] ANTHROPIC_API_KEY ej konfigurerad – returnerar engelska frågor utan kommentarer');
@@ -541,11 +556,27 @@ Svara ENBART med giltig JSON-array utan kodblock eller extra text:
 app.get('/api/trivia-questions', async (req, res) => {
   try {
     const questions = await fetchTriviaWithCommentary(10);
-    res.json({ questions });
+    const aiUsed = questions.some(q => q.funnyIntro);
+    const claudeError = questions._claudeError || null;
+    res.json({ questions, aiUsed, claudeError });
   } catch (e) {
     console.error('[trivia] Fel:', e.message);
     res.status(500).json({ error: e.message });
   }
+});
+
+// ── Konfigurations-status (för felsökning) ────────────────────────────────
+app.get('/api/config-status', (req, res) => {
+  const anthropicKey = process.env.ANTHROPIC_API_KEY;
+  const elevenKey = process.env.ELEVENLABS_API_KEY;
+  res.json({
+    anthropic: anthropicKey && anthropicKey !== 'din_anthropic_nyckel_här'
+      ? `✅ Konfigurerad (${anthropicKey.slice(0, 10)}…)`
+      : '❌ Ej konfigurerad (sätt ANTHROPIC_API_KEY i .env)',
+    elevenlabs: elevenKey && elevenKey !== 'din_nyckel_här'
+      ? `✅ Konfigurerad`
+      : '❌ Ej konfigurerad',
+  });
 });
 const ttsCache = new Map(); // text → Buffer
 
