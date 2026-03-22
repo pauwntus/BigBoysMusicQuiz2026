@@ -495,7 +495,9 @@ Svara ENBART med giltig JSON-array utan kodblock eller extra text:
         }],
       });
 
-      const raw = msg.content[0]?.text?.trim() || '[]';
+      let raw = msg.content[0]?.text?.trim() || '[]';
+      // Strip markdown code fences if Claude added them
+      raw = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '');
       const translated = JSON.parse(raw);
 
       const formatted = rawItems.map((item, i) => {
