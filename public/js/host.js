@@ -139,43 +139,43 @@ function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
 const HOST = {
   intros: [
-    'Håll i hatten, nu kör vi!',
-    'Spetsa öronen, nästa fråga!',
-    'Lugn i stormen... nu gäller det!',
-    'Ögon och öron öppna, folkens!',
-    'Tänk noga, det här kan vara lurigt!',
-    'Ingen fusk! Nu kör vi!',
-    'Dags att visa vad ni går för!',
+    'Ah, och nu väntar nästa fråga. Beredd? Det verkar optimistiskt.',
+    'Tänk noga nu – hjärnan kan göra underverk när man ger den chansen.',
+    'Nu kräver situationen eftertanke. Det vet jag, det är ovanligt.',
+    'Spänningen är nästan outhärdlig – för mig i varje fall.',
+    'Med sedvanlig elegans presenterar jag nu nästa fråga.',
+    'En fråga som separerar de bildade från de övriga.',
+    'Intellekten fram, mina vänner. Det är dags.',
   ],
   musicIntros: [
-    'MUSIKFRÅGA! Nu gäller det att ha koll på låtarna!',
-    'STOPP! Det här är en musikfråga! Lyssna noga!',
-    'Musik i kroppen? Bevisa det nu!',
-    'Musikälskare, er stund har kommit! MUSIKFRÅGA!',
-    'Nu testas musikhjärnan! MUSIKFRÅGA!',
+    'Ah, en MUSIKFRÅGA! Lyssna nu med hela din odelbara uppmärksamhet!',
+    'Musik – själens föda! Och er chans att briljera. MUSIKFRÅGA!',
+    'Nu träder musikhjärnan in på scenen. Applåder, tack!',
+    'En MUSIKFRÅGA! Må de med öron – och minne – vinna.',
+    'Det är musikens stund. Lyssna, tänk, och för guds skull – gissa inte.',
   ],
   allCorrect: [
-    'ALLA HADE RÄTT! Otroligt! Är ni fuskare?!',
-    'Perfekt omgång! Klockrent av alla! Fantastiskt!',
-    'Wow, hundra procent! Imponerad är bara förnamnet!',
-    'ALLA? ALLA?! Ja, ni är helt enkelt briljanta!',
+    'Alla rätt! Antingen är ni fenomenala, eller också är jag för generös. Förmodligen det senare.',
+    'Perfekt omgång. Jag är genuint imponerad, vilket sällan händer.',
+    'Storartat! Ni har bevisat att intelligensen fortfarande frodas i detta rum.',
+    'Alla?! ALLA?! Jag måste omedelbart skärpa nästa fråga avsevärt.',
   ],
   someCorrect: [
-    'Delade meningar i salen!',
-    'Några hade koll, andra… inte så mycket!',
-    'Blandade resultat! Det är quiz, folkens!',
-    'Klyftan växer! Spännande!',
+    'Delade läger. Som alltid när mänskligheten ställs inför sanningen.',
+    'Hmm. Hälften lysande, hälften… charmigt begränsade.',
+    'Blandade resultat. Precis som livet självt, om man tänker efter.',
+    'Splittrade svar. Det är quiz-formens stora skönhet och förbannelse.',
   ],
   noneCorrect: [
-    'INGEN HADE RÄTT! Skandal! Totalkatastrof!',
-    'Är ni verkligen säkra på att ni bor i Sverige?!',
-    'Noll poäng till alla! Det var… underwhelming!',
-    'INGEN?! Jag är besviken. Djupt besviken.',
+    'Ingen rätt. Ingen alls. Jag är rörd, på ett sätt jag inte riktigt kan förklara.',
+    'Noll poäng till samtliga. Det är faktiskt imponerande, fast på ett oroväckande sätt.',
+    'Häpnadsväckande. Alla fel. Jag visste inte att det var möjligt, men här är vi.',
+    'En fullständig katastrof. Jag föreslår att vi låtsas som om det inte hände och går vidare.',
   ],
   timeUp: [
-    'TIDEN ÄR UTE! Penslar ner!',
-    'STOPP! Inga fler svar!',
-    'Klockan har talat!',
+    'Och med det är tidens tyranni ett faktum. Penslarna ner.',
+    'Klockan har talat – med en viss oförsonlighet, måste jag säga.',
+    'STOPP! Ingen mer tid. Livet är en grym mästare.',
   ],
 };
 
@@ -436,7 +436,7 @@ function runCountdown(from = 3) {
       clearInterval(countdownInterval);
       el.textContent = 'QUIZ!';
       audio.playGameStart();
-      speak('Välkommen till Big Boys Music Quiz tjugohundraextrasex! Nu kör vi!', 0.88, 1.1);
+      speak('Välkommen, välkommen! Big Boys Music Quiz tjugohundraextrasex – kvällens utan tvekan mest intellektuella nöje. Låt oss börja.', 0.88, 1.1);
       setTimeout(() => socket.emit('host:next'), 2500);
     }
   }, 1200);
@@ -517,7 +517,7 @@ function showBuzz(playerName, color) {
   buzzOverlay.classList.remove('hidden');
   audio.playBuzz();
   gfx.flashBuzz(color || '#f59e0b');
-  speak(`${playerName} buzzade in!`, 0.95, 1.2);
+  speak(`${playerName} har mod nog att buzza in! Imponerande.`, 0.95, 1.2);
 
   // Show correct/wrong buttons
   document.getElementById('btn-correct').style.display = 'inline-block';
@@ -625,7 +625,7 @@ function renderGameOver(players) {
 
   audio.playCelebration();
   if (winner) {
-    speak(`Spelet är slut! Vinnaren är ${winner.name} med ${winner.score} poäng! Grattis!`, 0.88, 1.1);
+    speak(`Och med det är spelet till ända. Vinnaren – med ${winner.score} välförtjänta poäng – är ingen annan än ${winner.name}. Välförtjänt, och mycket välförtjänt.`, 0.88, 1.1);
   }
 }
 
@@ -700,8 +700,8 @@ socket.on('state', (state) => {
         }, 900);
       } else {
         setAvatarPosition('corner');
-        const roundAnnounce = questionIndex === 0 ? 'Fråga nummer ett!' :
-          questionIndex % 5 === 0 ? `Ny runda! Fråga nummer ${questionIndex + 1}!` :
+        const roundAnnounce = questionIndex === 0 ? 'Och så börjar det. Fråga nummer ett.' :
+          questionIndex % 5 === 0 ? `En ny runda träder in. Fråga nummer ${questionIndex + 1}.` :
           `${pick(HOST.intros)} Fråga ${questionIndex + 1}.`;
         (async () => {
           await speak(`${roundAnnounce} ${q?.question || ''}`, 0.87);
