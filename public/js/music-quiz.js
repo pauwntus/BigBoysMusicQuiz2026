@@ -117,3 +117,4 @@ const MusicQuiz = (() => {
 
   return { HOST, init };
 })();
+window.MusicQuiz = MusicQuiz;
