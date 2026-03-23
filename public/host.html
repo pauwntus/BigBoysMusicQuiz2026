@@ -230,12 +230,7 @@
     <div class="buzz-label">BUZZADE IN!</div>
   </div>
 
-  <!-- YouTube audio player – måste vara synlig i viewporten annars blockeras autoplay -->
-  <div id="yt-audio-container" style="position:fixed;bottom:0;right:0;width:2px;height:2px;overflow:hidden;z-index:0;pointer-events:none">
-    <div id="yt-audio-player"></div>
-  </div>
-
-  <script src="https://www.youtube.com/iframe_api"></script>
+  <audio id="preview-audio" preload="none"></audio>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/js/audio.js"></script>
   <script src="/js/graphics.js"></script>

@@ -22,12 +22,12 @@ let activeQuestions = defaultQuestions;
 // Song database for music quiz mode (metadata only – no YouTube IDs)
 const songDatabase = JSON.parse(fs.readFileSync(path.join(__dirname, 'songs.json'), 'utf8'));
 
-// ── YouTube ID cache (persistent, stored in yt-cache.json) ─────────────────
+// ── iTunes preview cache (persistent, stored i yt-cache.json) ───────────────
 const YT_CACHE_PATH = path.join(__dirname, 'yt-cache.json');
 let ytCache = {};
 try {
   ytCache = JSON.parse(fs.readFileSync(YT_CACHE_PATH, 'utf8'));
-  console.log(`[musik] YouTube-cache laddad: ${Object.keys(ytCache).length} poster`);
+  console.log(`[musik] Preview-cache laddad: ${Object.keys(ytCache).length} poster`);
 } catch {
   ytCache = {};
 }
@@ -40,37 +40,44 @@ function ytCacheKey(artist, title) {
   return `${artist.toLowerCase()}|${title.toLowerCase()}`;
 }
 
-async function searchYouTube(artist, title) {
-  const apiKey = process.env.YOUTUBE_API_KEY;
-  if (!apiKey) return null;
-  // "official audio" söker upp skivbolagsversioner som ofta blockerar embedding.
-  // Sök istället utan suffix – YouTube-topic-kanaler (alltid inbäddningsbara) hamnar högt.
+async function searchITunes(artist, title) {
   const q = encodeURIComponent(`${title} ${artist}`);
-  const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${q}&type=video&videoCategoryId=10&videoEmbeddable=true&maxResults=1&key=${apiKey}`;
+  const url = `https://itunes.apple.com/search?term=${q}&entity=song&limit=5&media=music`;
   try {
     const res = await fetch(url);
     if (!res.ok) {
-      console.warn(`[YouTube] sökning misslyckades (${res.status}) för: ${artist} – ${title}`);
+      console.warn(`[iTunes] sökning misslyckades (${res.status}) för: ${artist} – ${title}`);
       return null;
     }
     const data = await res.json();
-    return data.items?.[0]?.id?.videoId || null;
+    const normTitle  = normalizeAnswer(title);
+    const normArtist = normalizeAnswer(artist);
+    // Välj bästa träff bland resultat med previewUrl
+    const match = (data.results || [])
+      .filter(r => r.previewUrl)
+      .sort((a, b) => {
+        const score = r => (normalizeAnswer(r.trackName).includes(normTitle) ? 2 : 0)
+                         + (normalizeAnswer(r.artistName).includes(normArtist) ? 1 : 0);
+        return score(b) - score(a);
+      })[0];
+    return match?.previewUrl || null;
   } catch (e) {
-    console.warn(`[YouTube] nätverksfel: ${e.message}`);
+    console.warn(`[iTunes] nätverksfel: ${e.message}`);
     return null;
   }
 }
 
-async function getVideoId(song) {
+async function getPreviewUrl(song) {
   const key = ytCacheKey(song.artist, song.title);
-  if (ytCache[key]) return ytCache[key].videoId;
+  if (ytCache[key]) return ytCache[key].previewUrl;
 
-  const videoId = await searchYouTube(song.artist, song.title);
-  if (videoId) {
-    ytCache[key] = { videoId, cachedAt: Date.now() };
+  const previewUrl = await searchITunes(song.artist, song.title);
+  if (previewUrl) {
+    ytCache[key] = { previewUrl, cachedAt: Date.now() };
     saveYtCache();
+    console.log(`[iTunes] Cachad: ${song.artist} – ${song.title}`);
   }
-  return videoId || null;
+  return previewUrl || null;
 }
 
 // Standardstarter per era om ingen startAt finns i songs.json
@@ -688,8 +695,8 @@ async function buildMusicQuestions(count) {
   // Förhindrar rate-limiting (403) från YouTube Data API.
   for (const song of candidates) {
     if (selected.length >= count) break;
-    const videoId = await getVideoId(song);
-    if (videoId) selected.push({ ...song, videoId });
+    const previewUrl = await getPreviewUrl(song);
+    if (previewUrl) selected.push({ ...song, previewUrl });
   }
 
   return selected.map((song, idx) => {
@@ -705,10 +712,8 @@ async function buildMusicQuestions(count) {
       artistAnswer: song.artist,
       points: song.points || 2,
       media: {
-        type: 'youtube',
-        videoId: song.videoId,
-        startAt: getStartAt(song),
-        audioOnly: true,
+        type: 'audio',
+        previewUrl: song.previewUrl,
       },
       explanation: `${song.artist} – "${song.title}" (${song.year})`,
     };
@@ -720,7 +725,7 @@ app.get('/api/music-questions', async (req, res) => {
   try {
     const questions = await buildMusicQuestions(count);
     if (questions.length === 0) {
-      return res.status(503).json({ error: 'Inga låtar hittades. Kontrollera YOUTUBE_API_KEY i .env.' });
+      return res.status(503).json({ error: 'Inga låtar hittades. iTunes-sökning kan ha misslyckats.' });
     }
     res.json({ questions });
   } catch (e) {
@@ -732,14 +737,12 @@ app.get('/api/music-questions', async (req, res) => {
 // Markera ett video-ID som ej inbäddningsbart – tas bort från cache
 app.post('/api/music-cache-invalidate', express.json(), (req, res) => {
   const { videoId } = req.body || {};
-  if (!videoId) return res.status(400).json({ error: 'videoId saknas' });
+  const { previewUrl } = req.body || {};
+  if (!previewUrl) return res.status(400).json({ error: 'previewUrl saknas' });
   const removed = Object.entries(ytCache)
-    .filter(([, v]) => v.videoId === videoId)
+    .filter(([, v]) => v.previewUrl === previewUrl)
     .map(([k]) => { delete ytCache[k]; return k; });
-  if (removed.length) {
-    saveYtCache();
-    console.log(`[musik] Cache-post invaliderad (ej inbäddningsbar): ${removed.join(', ')} – videoId=${videoId}`);
-  }
+  if (removed.length) saveYtCache();
   res.json({ removed });
 });
 
@@ -747,8 +750,7 @@ app.post('/api/music-cache-invalidate', express.json(), (req, res) => {
 app.get('/api/music-cache-status', (req, res) => {
   const total = songDatabase.length;
   const cached = songDatabase.filter(s => ytCache[ytCacheKey(s.artist, s.title)]).length;
-  const hasApiKey = !!(process.env.YOUTUBE_API_KEY);
-  res.json({ total, cached, hasApiKey });
+  res.json({ total, cached, hasApiKey: true }); // iTunes behöver ingen API-nyckel
 });
 
 app.get('/api/trivia-questions', async (req, res) => {

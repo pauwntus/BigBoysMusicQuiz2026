@@ -182,57 +182,31 @@ const HOST = {
 initTTS();
 initBlink();
 
-// ── YouTube IFrame API ─────────────────────────────
-let ytVideoPlayer = null;
-let ytAudioPlayer = null;
-let ytVideoReady = false;
-let ytAudioReady = false;
-let mediaState = { videoId: null, startAt: 0, audioOnly: true, isPlaying: false };
+// ── iTunes Preview Audio ────────────────────────────
+const previewAudio = document.getElementById('preview-audio');
+let mediaState = { previewUrl: null, isPlaying: false };
 
-window.onYouTubeIframeAPIReady = () => {
-  console.log('[YT] IFrame API redo');
-  ytAudioPlayer = new YT.Player('yt-audio-player', {
-    width: '2', height: '2',
-    playerVars: { controls: 0, rel: 0, modestbranding: 1, disablekb: 1, iv_load_policy: 3, origin: window.location.origin },
-    events: {
-      onReady: () => { ytAudioReady = true; console.log('[YT] Audio-spelare redo'); },
-      onError: (e) => {
-        console.warn('[YT] Audio-fel:', e.data);
-        const UNPLAYABLE = [100, 101, 150]; // saknas / ej inbäddningsbar
-        if (UNPLAYABLE.includes(e.data)) {
-          pauseSoundBars();
-          mediaState.isPlaying = false;
-          const pb = document.getElementById('btn-play-media');
-          if (pb) { pb.textContent = '▶ SPELA'; pb.classList.remove('playing'); }
-          const npt = document.getElementById('now-playing-text');
-          if (npt) npt.textContent = '⚠ Kan ej spelas (upphovsrätt)';
-          // Invalidera cache-posten så nästa sökning hittar en ny video
-          if (mediaState.videoId) {
-            fetch('/api/music-cache-invalidate', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ videoId: mediaState.videoId }),
-            }).catch(() => {});
-          }
-        }
-      },
-      onStateChange: (e) => console.log('[YT] State:', e.data),
-    },
-  });
-  ytVideoPlayer = new YT.Player('yt-player-container', {
-    width: '100%', height: '100%',
-    playerVars: { controls: 1, rel: 0, modestbranding: 1, iv_load_policy: 3, fs: 0, origin: window.location.origin },
-    events: {
-      onReady: () => { ytVideoReady = true; console.log('[YT] Video-spelare redo'); },
-      onError: (e) => console.warn('[YT] Video-fel:', e.data),
-    },
-  });
-};
+previewAudio.addEventListener('ended', () => {
+  mediaState.isPlaying = false;
+  pauseSoundBars();
+  const pb = document.getElementById('btn-play-media');
+  if (pb) { pb.textContent = '▶ SPELA'; pb.classList.remove('playing'); }
+  const npt = document.getElementById('now-playing-text');
+  if (npt) npt.textContent = '🎵 Förhandsvisning slut';
+});
+
+previewAudio.addEventListener('error', () => {
+  mediaState.isPlaying = false;
+  pauseSoundBars();
+  const pb = document.getElementById('btn-play-media');
+  if (pb) { pb.textContent = '▶ SPELA'; pb.classList.remove('playing'); }
+  const npt = document.getElementById('now-playing-text');
+  if (npt) npt.textContent = '⚠ Kunde inte ladda förhandsvisning';
+});
 
 function loadMedia(media) {
   const area = document.getElementById('media-area');
   const audioEl = document.getElementById('media-audio');
-  const videoEl = document.getElementById('media-video');
   const imageEl = document.getElementById('media-image');
   const playBtn = document.getElementById('btn-play-media');
 
@@ -242,18 +216,13 @@ function loadMedia(media) {
 
   area.style.display = 'flex';
   audioEl.style.display = 'none';
-  videoEl.style.display = 'none';
   imageEl.style.display = 'none';
   playBtn.style.display = 'none';
 
-  if (media.type === 'youtube') {
-    mediaState = { videoId: media.videoId, startAt: media.startAt || 0, audioOnly: media.audioOnly !== false, isPlaying: false };
-    if (mediaState.audioOnly) {
-      audioEl.style.display = 'flex';
-      pauseSoundBars();
-    } else {
-      videoEl.style.display = 'flex';
-    }
+  if (media.type === 'audio') {
+    mediaState = { previewUrl: media.previewUrl, isPlaying: false };
+    audioEl.style.display = 'flex';
+    pauseSoundBars();
     playBtn.style.display = 'inline-block';
     playBtn.textContent = '▶ SPELA';
     playBtn.classList.remove('playing');
@@ -265,46 +234,24 @@ function loadMedia(media) {
 }
 
 function autoPlayMedia() {
-  const { videoId, startAt, audioOnly } = mediaState;
-  if (!videoId) return;
-  console.log(`[YT] autoPlayMedia – videoId=${videoId} startAt=${startAt} audioOnly=${audioOnly} audioReady=${ytAudioReady}`);
-  let tries = 0;
-  function attempt() {
-    tries++;
-    try {
-      if (audioOnly && ytAudioReady) {
-        ytAudioPlayer.loadVideoById({ videoId, startSeconds: startAt });
-        ytAudioPlayer.setVolume(100);
-        mediaState.isPlaying = true;
-        playSoundBars();
-        const pb = document.getElementById('btn-play-media');
-        if (pb) { pb.textContent = '⏸ PAUSA'; pb.classList.add('playing'); }
-        const npt = document.getElementById('now-playing-text');
-        if (npt) npt.textContent = '🎵 Spelar…';
-        console.log('[YT] loadVideoById skickad, försök', tries);
-      } else if (!audioOnly && ytVideoReady) {
-        ytVideoPlayer.loadVideoById({ videoId, startSeconds: startAt });
-        ytVideoPlayer.playVideo();
-        mediaState.isPlaying = true;
-      } else if (tries < 20) {
-        console.log(`[YT] spelare ej redo (audioReady=${ytAudioReady}), försöker igen…`);
-        setTimeout(attempt, 500);
-      } else {
-        console.warn('[YT] gav upp efter 20 försök');
-      }
-    } catch (e) {
-      console.warn('[YT] autoplay-fel:', e.message);
-      if (tries < 20) setTimeout(attempt, 500);
-    }
-  }
-  attempt();
+  const { previewUrl } = mediaState;
+  if (!previewUrl) return;
+  previewAudio.src = previewUrl;
+  previewAudio.play()
+    .then(() => {
+      mediaState.isPlaying = true;
+      playSoundBars();
+      const pb = document.getElementById('btn-play-media');
+      if (pb) { pb.textContent = '⏸ PAUSA'; pb.classList.add('playing'); }
+      const npt = document.getElementById('now-playing-text');
+      if (npt) npt.textContent = '🎵 Spelar…';
+    })
+    .catch(e => console.warn('[Audio] autoplay misslyckades:', e.message));
 }
 
 function stopMedia(hideArea = true) {
-  try {
-    if (ytAudioReady && ytAudioPlayer) ytAudioPlayer.stopVideo();
-    if (ytVideoReady && ytVideoPlayer) ytVideoPlayer.stopVideo();
-  } catch(e) {}
+  previewAudio.pause();
+  previewAudio.src = '';
   mediaState.isPlaying = false;
   pauseSoundBars();
   const pb = document.getElementById('btn-play-media');
@@ -320,35 +267,25 @@ function playSoundBars() {
 }
 
 document.getElementById('btn-play-media').addEventListener('click', () => {
-  const { videoId, startAt, audioOnly, isPlaying } = mediaState;
-  if (!videoId) return;
+  const { previewUrl, isPlaying } = mediaState;
+  if (!previewUrl) return;
   const pb = document.getElementById('btn-play-media');
   if (isPlaying) {
-    try {
-      if (audioOnly && ytAudioReady) ytAudioPlayer.pauseVideo();
-      else if (!audioOnly && ytVideoReady) ytVideoPlayer.pauseVideo();
-    } catch(e) {}
+    previewAudio.pause();
     mediaState.isPlaying = false;
     pauseSoundBars();
     pb.textContent = '▶ SPELA'; pb.classList.remove('playing');
     document.getElementById('now-playing-text').textContent = '⏸ Pausad';
   } else {
-    try {
-      if (audioOnly && ytAudioReady) {
-        ytAudioPlayer.loadVideoById({ videoId, startSeconds: startAt });
-        ytAudioPlayer.setVolume(100);
-        console.log('[YT] manuell play – videoId:', videoId);
-      } else if (!audioOnly && ytVideoReady) {
-        ytVideoPlayer.loadVideoById({ videoId, startSeconds: startAt });
-        ytVideoPlayer.playVideo();
-      } else {
-        console.warn('[YT] manuell play: spelare ej redo (audioReady=', ytAudioReady, ')');
-      }
-    } catch(e) { console.warn('[YT] play-fel:', e); }
-    mediaState.isPlaying = true;
-    playSoundBars();
-    pb.textContent = '⏸ PAUSA'; pb.classList.add('playing');
-    document.getElementById('now-playing-text').textContent = '🎵 Spelar…';
+    if (!previewAudio.src) previewAudio.src = previewUrl;
+    previewAudio.play()
+      .then(() => {
+        mediaState.isPlaying = true;
+        playSoundBars();
+        pb.textContent = '⏸ PAUSA'; pb.classList.add('playing');
+        document.getElementById('now-playing-text').textContent = '🎵 Spelar…';
+      })
+      .catch(e => console.warn('[Audio] play misslyckades:', e.message));
   }
 });
 
