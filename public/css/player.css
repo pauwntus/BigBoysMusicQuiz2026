@@ -464,6 +464,106 @@ html, body {
   font-size: 1rem;
 }
 
+/* ── Musik Fritext-svar ── */
+.music-answer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 420px;
+  padding: 1.2rem 1rem 1rem;
+}
+
+.music-listen-anim {
+  display: flex;
+  gap: 6px;
+  align-items: flex-end;
+  height: 2.2rem;
+}
+
+.sound-pulse {
+  width: 8px;
+  border-radius: 4px;
+  background: var(--accent);
+  animation: soundPulse 0.9s ease-in-out infinite;
+}
+.sound-pulse:nth-child(1) { height: 1rem; animation-delay: 0s; }
+.sound-pulse:nth-child(2) { height: 2rem; animation-delay: 0.2s; }
+.sound-pulse:nth-child(3) { height: 1.2rem; animation-delay: 0.4s; }
+@keyframes soundPulse {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(1.7); }
+}
+
+.music-ans-hint {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.music-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  width: 100%;
+}
+
+.music-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.music-input-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.music-text-input {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 600;
+  padding: 0.7rem 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.music-text-input:focus {
+  outline: none;
+  border-color: var(--player-color, var(--accent));
+  box-shadow: 0 0 15px color-mix(in srgb, var(--player-color, var(--accent)) 25%, transparent);
+}
+.music-text-input::placeholder { color: var(--muted); font-weight: 400; }
+
+.btn-music-submit {
+  width: 100%;
+  background: linear-gradient(135deg, var(--accent), #ec4899);
+  color: #000;
+  border: none;
+  border-radius: 14px;
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 0.85rem 1rem;
+  cursor: pointer;
+  transition: transform 0.15s, opacity 0.2s;
+}
+.btn-music-submit:active { transform: scale(0.97); }
+.btn-music-submit:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  background: var(--surface);
+  color: var(--muted);
+}
+
 /* ── Timer Bar ── */
 .timer-bar-wrap {
   width: 100%;

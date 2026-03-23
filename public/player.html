@@ -85,6 +85,36 @@
     </div>
   </div>
 
+  <!-- MUSIK-SVAR SCREEN -->
+  <div id="screen-music-answer" class="screen">
+    <div class="music-answer-content">
+      <div class="mc-category" id="music-ans-category">🎵 Gissa Låten</div>
+      <div class="music-listen-anim">
+        <span class="sound-pulse"></span>
+        <span class="sound-pulse"></span>
+        <span class="sound-pulse"></span>
+      </div>
+      <p class="music-ans-hint">Lyssna och skriv in svaret!</p>
+      <div class="music-inputs">
+        <div class="music-input-group">
+          <label class="music-input-label">🎵 LÅTENS TITEL</label>
+          <input type="text" id="music-title-input" class="music-text-input"
+            placeholder="Skriv titeln…" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="music-input-group">
+          <label class="music-input-label">🎤 ARTIST</label>
+          <input type="text" id="music-artist-input" class="music-text-input"
+            placeholder="Skriv artisten…" autocomplete="off" spellcheck="false">
+        </div>
+      </div>
+      <button id="music-submit-btn" class="btn-music-submit">SKICKA SVAR ✓</button>
+      <div class="timer-bar-wrap">
+        <div class="timer-bar" id="music-timer-bar"></div>
+      </div>
+      <div class="mc-status" id="music-status"></div>
+    </div>
+  </div>
+
   <!-- REVEAL SCREEN -->
   <div id="screen-reveal" class="screen">
     <div class="reveal-content">

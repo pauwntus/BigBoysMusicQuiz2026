@@ -18,6 +18,7 @@ const screens = {
   lobby: document.getElementById('screen-lobby'),
   buzz: document.getElementById('screen-buzz'),
   mc: document.getElementById('screen-mc'),
+  'music-answer': document.getElementById('screen-music-answer'),
   reveal: document.getElementById('screen-reveal'),
   gameover: document.getElementById('screen-gameover'),
 };
@@ -238,6 +239,8 @@ socket.on('state', (state) => {
 
     if (q.type === 'buzz') {
       showBuzzScreen(q);
+    } else if (q.type === 'music-freetext') {
+      showMusicAnswerScreen(q);
     } else if (q.type === 'multiple-choice') {
       showMCScreen(q);
     }
@@ -281,11 +284,13 @@ socket.on('state', (state) => {
 
   // Timer bar
   if (phase === 'buzz_open' && currentQuestion) {
-    const max = currentQuestion.type === 'multiple-choice' ? 20 : 30;
+    const type = currentQuestion.type;
+    const max = type === 'multiple-choice' ? 20 : type === 'music-freetext' ? 25 : 30;
     const fraction = Math.max(0, timer / max);
-    const barEl = currentQuestion.type === 'multiple-choice'
-      ? document.getElementById('mc-timer-bar')
-      : document.getElementById('timer-bar');
+    const barId = type === 'multiple-choice' ? 'mc-timer-bar'
+                : type === 'music-freetext'  ? 'music-timer-bar'
+                : 'timer-bar';
+    const barEl = document.getElementById(barId);
     if (barEl) {
       barEl.style.width = (fraction * 100) + '%';
       if (fraction < 0.3) barEl.classList.add('warning');
@@ -350,6 +355,49 @@ function showMCScreen(q) {
 
   showScreen('mc');
 }
+
+// ── Musik Fritext-svar Screen ─────────────────────
+function showMusicAnswerScreen(q) {
+  document.getElementById('music-ans-category').textContent = q.category || '🎵 Gissa Låten';
+  document.getElementById('music-title-input').value = '';
+  document.getElementById('music-artist-input').value = '';
+  document.getElementById('music-status').textContent = '';
+  document.getElementById('music-submit-btn').disabled = false;
+  document.getElementById('music-submit-btn').textContent = 'SKICKA SVAR ✓';
+  hasAnswered = false;
+
+  const bar = document.getElementById('music-timer-bar');
+  if (bar) { bar.style.width = '100%'; bar.classList.remove('warning'); }
+
+  showScreen('music-answer');
+  // Fokusera titelfältet direkt
+  setTimeout(() => document.getElementById('music-title-input').focus(), 100);
+}
+
+function submitMusicAnswer() {
+  if (hasAnswered) return;
+  const titleVal = document.getElementById('music-title-input').value.trim();
+  const artistVal = document.getElementById('music-artist-input').value.trim();
+  if (!titleVal) {
+    document.getElementById('music-status').textContent = '⚠ Ange åtminstone titeln!';
+    return;
+  }
+  hasAnswered = true;
+  socket.emit('player:answer', { titleAnswer: titleVal, artistAnswer: artistVal });
+  document.getElementById('music-submit-btn').disabled = true;
+  document.getElementById('music-submit-btn').textContent = 'Svar skickat ✓';
+  document.getElementById('music-status').textContent = '🎵 Väntar på resultat…';
+}
+
+document.getElementById('music-submit-btn').addEventListener('click', submitMusicAnswer);
+
+// Skicka med Enter i artist-fältet
+document.getElementById('music-artist-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') submitMusicAnswer();
+});
+document.getElementById('music-title-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('music-artist-input').focus();
+});
 
 // ── Reveal Screen ─────────────────────────────────
 function showRevealScreen(q, myAnswer) {

@@ -77,6 +77,40 @@ function getStartAt(song) {
   return song.startAt ?? ERA_DEFAULT_START[song.era] ?? 10;
 }
 
+// ── Fuzzy-matchning för fritext-svar ───────────────────────────────────────
+function normalizeAnswer(s) {
+  return String(s || '').toLowerCase()
+    .replace(/[''`]/g, '')             // apostrofer
+    .replace(/[^a-zåäöéèêàùü0-9\s]/g, '') // övriga specialtecken
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  const dp = Array.from({ length: m + 1 }, (_, i) => Array(n + 1).fill(0).map((_, j) => j === 0 ? i : 0));
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      dp[i][j] = a[i - 1] === b[j - 1]
+        ? dp[i - 1][j - 1]
+        : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+    }
+  }
+  return dp[m][n];
+}
+
+function isSimilar(input, correct, threshold = 0.62) {
+  const a = normalizeAnswer(input);
+  const b = normalizeAnswer(correct);
+  if (!a) return false;
+  if (a === b) return true;
+  if (b.includes(a) || a.includes(b)) return true;
+  const maxLen = Math.max(a.length, b.length);
+  if (maxLen === 0) return true;
+  return (maxLen - levenshtein(a, b)) / maxLen >= threshold;
+}
+
 // Allowed emoji list (security: only allow from this set)
 const ALLOWED_EMOJIS = new Set([
   '🎸','🎤','🥁','🎹','🎺','🎻','🤘','🦄','🔥','👾','🤖','⭐','🦊','🐸','💀','🎭',
@@ -337,6 +371,8 @@ io.on('connection', (socket) => {
     if (q.type === 'multiple-choice') {
       scheduleBotAnswers();
       startTimer(20, null, () => { revealAnswer(); });
+    } else if (q.type === 'music-freetext') {
+      startTimer(25, null, () => { revealAnswer(); });
     } else if (q.type === 'buzz') {
       startTimer(30, null, () => { revealAnswer(); });
     }
@@ -353,18 +389,30 @@ io.on('connection', (socket) => {
     broadcast();
   });
 
-  // Player answers (multiple choice)
+  // Player answers (multiple choice or music freetext)
   socket.on('player:answer', (data) => {
     if (gameState.phase !== 'buzz_open' && gameState.phase !== 'buzz_claimed') return;
     if (!gameState.players[socket.id]) return;
     if (gameState.answers[socket.id]) return; // already answered
 
     const q = activeQuestions[gameState.questionIndex];
-    const correct = data.answer === q.answer;
+
+    let correct, displayAnswer;
+    if (q.type === 'music-freetext') {
+      const titleOk = isSimilar(data.titleAnswer, q.titleAnswer);
+      correct = titleOk;
+      const tPart = (data.titleAnswer || '').trim() || '–';
+      const aPart = (data.artistAnswer || '').trim() || '–';
+      displayAnswer = `${aPart} – ${tPart}`;
+    } else {
+      correct = data.answer === q.answer;
+      displayAnswer = data.answer;
+    }
+
     const points = correct ? (q.points || 2) : 0;
 
     gameState.answers[socket.id] = {
-      answer: data.answer,
+      answer: displayAnswer,
       correct,
       points,
     };
@@ -645,25 +693,16 @@ async function buildMusicQuestions(count) {
   const selected = resolved.filter(Boolean).slice(0, count);
 
   return selected.map((song, idx) => {
-    // Distractors: samma era helst, annars slumpmässigt
-    const sameEra = songDatabase.filter(s => s.era === song.era && s.id !== song.id);
-    const otherEra = songDatabase.filter(s => s.era !== song.era && s.id !== song.id);
-    const pool = shuffleArray([...sameEra, ...shuffleArray(otherEra)]);
-    const distractors = pool.slice(0, 3);
-
     const correctLabel = `${song.artist} – ${song.title}`;
-    const options = shuffleArray([
-      correctLabel,
-      ...distractors.map(s => `${s.artist} – ${s.title}`),
-    ]);
 
     return {
       id: idx + 1,
-      type: 'multiple-choice',
+      type: 'music-freetext',
       category: '🎵 Gissa Låten',
       question: MUSIC_QUESTION_TEMPLATES[idx % MUSIC_QUESTION_TEMPLATES.length],
-      options,
       answer: correctLabel,
+      titleAnswer: song.title,
+      artistAnswer: song.artist,
       points: song.points || 2,
       media: {
         type: 'youtube',

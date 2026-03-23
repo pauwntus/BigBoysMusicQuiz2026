@@ -237,6 +237,36 @@ function loadMedia(media) {
   }
 }
 
+function autoPlayMedia() {
+  const { videoId, startAt, audioOnly } = mediaState;
+  if (!videoId) return;
+  function attempt() {
+    try {
+      if (audioOnly && ytAudioReady) {
+        ytAudioPlayer.loadVideoById({ videoId, startSeconds: startAt });
+        ytAudioPlayer.playVideo();
+        ytAudioPlayer.setVolume(100);
+        mediaState.isPlaying = true;
+        playSoundBars();
+        const pb = document.getElementById('btn-play-media');
+        if (pb) { pb.textContent = '⏸ PAUSA'; pb.classList.add('playing'); }
+        const npt = document.getElementById('now-playing-text');
+        if (npt) npt.textContent = '🎵 Spelar…';
+      } else if (!audioOnly && ytVideoReady) {
+        ytVideoPlayer.loadVideoById({ videoId, startSeconds: startAt });
+        ytVideoPlayer.playVideo();
+        mediaState.isPlaying = true;
+      } else {
+        setTimeout(attempt, 400); // player inte redo ännu
+      }
+    } catch (e) {
+      console.warn('[YT] autoplay-fel, försöker igen:', e.message);
+      setTimeout(attempt, 400);
+    }
+  }
+  attempt();
+}
+
 function stopMedia(hideArea = true) {
   try {
     if (ytAudioReady && ytAudioPlayer) ytAudioPlayer.stopVideo();
@@ -483,6 +513,8 @@ function renderQuestion(state) {
       btn.innerHTML = `<span class="option-label">${LABELS[i]}</span><span>${opt}</span>`;
       grid.appendChild(btn);
     });
+  } else if (q.type === 'music-freetext') {
+    grid.innerHTML = `<p style="color:#a855f7;font-size:1.1rem;font-style:italic;text-align:center;grid-column:1/-1">🎵 Spelare skriver in titel + artist på sin skärm</p>`;
   } else {
     grid.innerHTML = `<p style="color:#a855f7;font-size:1.2rem;font-style:italic;text-align:center;grid-column:1/-1">🎤 Buzz-in fråga – tryck på buzz-knappen!</p>`;
   }
@@ -560,7 +592,10 @@ function renderReveal(state) {
     if (!player) return;
     const chip = document.createElement('div');
     chip.className = `result-chip ${ans.correct ? 'correct' : 'wrong'}`;
-    chip.innerHTML = `${ans.correct ? '✓' : '✗'} <strong>${player.name}</strong> ${ans.correct ? `+${ans.points}p` : ''}`;
+    const answerText = ans.answer && ans.answer !== q?.answer
+      ? `<span style="font-size:0.8em;opacity:0.8"> – "${ans.answer}"</span>`
+      : '';
+    chip.innerHTML = `${ans.correct ? '✓' : '✗'} <strong>${player.name}</strong>${answerText} ${ans.correct ? `+${ans.points}p` : ''}`;
     results.appendChild(chip);
   });
 }
@@ -706,6 +741,7 @@ socket.on('state', (state) => {
         setTimeout(async () => {
           await speak(`${intro} ${q?.question || ''}`, 0.86, 1.15);
           socket.emit('host:ready_for_buzz');
+          autoPlayMedia();
         }, 900);
       } else {
         setAvatarPosition('corner');
