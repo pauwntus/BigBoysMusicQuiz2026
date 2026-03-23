@@ -304,10 +304,11 @@ function speakRevealCommentary(state) {
     else scoreSummary = `${correct} av ${total} hade rätt.`;
     speak(`Rätt svar: ${ans}. ${scoreSummary} ${funnyOutro}`);
   } else {
+    const hostPhrases = (state.gameMode === 'music' && window.MusicQuiz) ? MusicQuiz.HOST : HOST;
     let phrase;
-    if (correct === total && total > 0) phrase = pick(HOST.allCorrect);
-    else if (correct === 0) phrase = pick(HOST.noneCorrect);
-    else phrase = pick(HOST.someCorrect);
+    if (correct === total && total > 0) phrase = pick(hostPhrases.allCorrect);
+    else if (correct === 0) phrase = pick(hostPhrases.noneCorrect);
+    else phrase = pick(hostPhrases.someCorrect);
     speak(`Rätt svar: ${ans}. ${phrase} ${expl}`, 0.86, 1.12);
   }
 }
@@ -348,6 +349,11 @@ function showScreen(name) {
     document.getElementById('qr-container').innerHTML = '<p style="color:#888">QR ej tillgänglig</p>';
   }
 })();
+
+// ── Musikquiz-modul initiering ────────────────────
+if (window.MusicQuiz) {
+  MusicQuiz.init(socket);
+}
 
 // ── Lobby ─────────────────────────────────────────
 document.getElementById('btn-start').addEventListener('click', () => {
@@ -693,7 +699,10 @@ socket.on('state', (state) => {
       } else if (isMusic) {
         setAvatarPosition('corner');
         audio.playMusicJingle();
-        const intro = pick(HOST.musicIntros);
+        const introPool = (state.gameMode === 'music' && window.MusicQuiz)
+          ? MusicQuiz.HOST.roundIntros
+          : HOST.musicIntros;
+        const intro = pick(introPool);
         setTimeout(async () => {
           await speak(`${intro} ${q?.question || ''}`, 0.86, 1.15);
           socket.emit('host:ready_for_buzz');

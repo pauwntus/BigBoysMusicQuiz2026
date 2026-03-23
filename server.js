@@ -19,6 +19,9 @@ const defaultQuestions = JSON.parse(fs.readFileSync(path.join(__dirname, 'questi
 // activeQuestions can be swapped to trivia questions during a session
 let activeQuestions = defaultQuestions;
 
+// Song database for music quiz mode
+const songDatabase = JSON.parse(fs.readFileSync(path.join(__dirname, 'songs.json'), 'utf8'));
+
 // Allowed emoji list (security: only allow from this set)
 const ALLOWED_EMOJIS = new Set([
   '🎸','🎤','🥁','🎹','🎺','🎻','🤘','🦄','🔥','👾','🤖','⭐','🦊','🐸','💀','🎭',
@@ -37,6 +40,7 @@ let gameState = {
   round: 0,
   totalQuestions: activeQuestions.length,
   testMode: false,
+  gameMode: 'default', // 'default' | 'trivia' | 'music'
 };
 
 // Bot logic
@@ -134,6 +138,7 @@ function sanitizeState() {
     timer: gameState.timer,
     round: gameState.round,
     totalQuestions: gameState.totalQuestions,
+    gameMode: gameState.gameMode,
   };
 }
 
@@ -356,7 +361,18 @@ io.on('connection', (socket) => {
     if (!Array.isArray(triviaQuestions) || triviaQuestions.length === 0) return;
     activeQuestions = triviaQuestions;
     gameState.totalQuestions = triviaQuestions.length;
+    gameState.gameMode = 'trivia';
     console.log(`[trivia] Laddade ${triviaQuestions.length} triviafrågor`);
+    broadcast();
+  });
+
+  // Host loads music quiz questions
+  socket.on('host:load_music', (musicQuestions) => {
+    if (!Array.isArray(musicQuestions) || musicQuestions.length === 0) return;
+    activeQuestions = musicQuestions;
+    gameState.totalQuestions = musicQuestions.length;
+    gameState.gameMode = 'music';
+    console.log(`[musik] Laddade ${musicQuestions.length} musikfrågor`);
     broadcast();
   });
 
@@ -375,6 +391,7 @@ io.on('connection', (socket) => {
       round: 0,
       totalQuestions: activeQuestions.length,
       testMode: false,
+      gameMode: 'default',
     };
     broadcast();
   });
@@ -549,6 +566,56 @@ Svara ENBART med giltig JSON-array utan kodblock eller extra text:
     funnyOutro: null,
   }));
 }
+
+// ── Musikquiz – slumpar låtar från songs.json ─────────────────────────────
+const MUSIC_QUESTION_TEMPLATES = [
+  '🎵 Lyssna noga – vilken låt spelas?',
+  '🎵 Hör du det? Vilken låt är det?',
+  '🎵 Kan du identifiera den här låten?',
+  '🎵 Lyssna – vilken av dessa spelas?',
+];
+
+function buildMusicQuestions(count) {
+  const shuffled = shuffleArray(songDatabase);
+  const selected = shuffled.slice(0, Math.min(count, shuffled.length));
+
+  return selected.map((song, idx) => {
+    // Välj distractors: samma era först, sedan övriga
+    const sameEra = songDatabase.filter(s => s.era === song.era && s.id !== song.id);
+    const otherEra = songDatabase.filter(s => s.era !== song.era);
+    const pool = shuffleArray([...sameEra, ...shuffleArray(otherEra)]);
+    const distractors = pool.slice(0, 3);
+
+    const correctLabel = `${song.artist} – ${song.title}`;
+    const options = shuffleArray([
+      correctLabel,
+      ...distractors.map(s => `${s.artist} – ${s.title}`),
+    ]);
+
+    return {
+      id: idx + 1,
+      type: 'multiple-choice',
+      category: '🎵 Gissa Låten',
+      question: MUSIC_QUESTION_TEMPLATES[idx % MUSIC_QUESTION_TEMPLATES.length],
+      options,
+      answer: correctLabel,
+      points: song.points || 2,
+      media: {
+        type: 'youtube',
+        videoId: song.youtube.videoId,
+        startAt: song.youtube.startAt,
+        audioOnly: true,
+      },
+      explanation: `${song.artist} – "${song.title}" (${song.year})`,
+    };
+  });
+}
+
+app.get('/api/music-questions', (req, res) => {
+  const count = Math.min(parseInt(req.query.count) || 12, 20);
+  const questions = buildMusicQuestions(count);
+  res.json({ questions });
+});
 
 app.get('/api/trivia-questions', async (req, res) => {
   try {

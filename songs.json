@@ -1,0 +1,322 @@
+[
+  {
+    "id": 1,
+    "title": "Dancing Queen",
+    "artist": "ABBA",
+    "year": 1976,
+    "era": "70s",
+    "genre": "pop",
+    "points": 2,
+    "youtube": { "videoId": "xFrGuyw1V8s", "startAt": 30 }
+  },
+  {
+    "id": 2,
+    "title": "Waterloo",
+    "artist": "ABBA",
+    "year": 1974,
+    "era": "70s",
+    "genre": "pop",
+    "points": 2,
+    "youtube": { "videoId": "Sj_9CiNkkn4", "startAt": 40 }
+  },
+  {
+    "id": 3,
+    "title": "Mamma Mia",
+    "artist": "ABBA",
+    "year": 1975,
+    "era": "70s",
+    "genre": "pop",
+    "points": 2,
+    "youtube": { "videoId": "unfzThL4MNw", "startAt": 15 }
+  },
+  {
+    "id": 4,
+    "title": "Bohemian Rhapsody",
+    "artist": "Queen",
+    "year": 1975,
+    "era": "70s",
+    "genre": "rock",
+    "points": 2,
+    "youtube": { "videoId": "fJ9rUzIMcZQ", "startAt": 0 }
+  },
+  {
+    "id": 5,
+    "title": "Never Gonna Give You Up",
+    "artist": "Rick Astley",
+    "year": 1987,
+    "era": "80s",
+    "genre": "pop",
+    "points": 1,
+    "youtube": { "videoId": "dQw4w9WgXcQ", "startAt": 18 }
+  },
+  {
+    "id": 6,
+    "title": "Take On Me",
+    "artist": "a-ha",
+    "year": 1985,
+    "era": "80s",
+    "genre": "pop",
+    "points": 2,
+    "youtube": { "videoId": "djV11Tbc3h8", "startAt": 40 }
+  },
+  {
+    "id": 7,
+    "title": "Thriller",
+    "artist": "Michael Jackson",
+    "year": 1982,
+    "era": "80s",
+    "genre": "pop",
+    "points": 2,
+    "youtube": { "videoId": "sOnHMHKF4RA", "startAt": 95 }
+  },
+  {
+    "id": 8,
+    "title": "Billie Jean",
+    "artist": "Michael Jackson",
+    "year": 1982,
+    "era": "80s",
+    "genre": "pop",
+    "points": 2,
+    "youtube": { "videoId": "Zi_XLOBDo_Y", "startAt": 20 }
+  },
+  {
+    "id": 9,
+    "title": "Listen To Your Heart",
+    "artist": "Roxette",
+    "year": 1988,
+    "era": "80s",
+    "genre": "pop",
+    "points": 2,
+    "youtube": { "videoId": "k2C5TjS2sh4", "startAt": 20 }
+  },
+  {
+    "id": 10,
+    "title": "The Look",
+    "artist": "Roxette",
+    "year": 1989,
+    "era": "80s",
+    "genre": "pop",
+    "points": 2,
+    "youtube": { "videoId": "90VbpgGCHGE", "startAt": 10 }
+  },
+  {
+    "id": 11,
+    "title": "Like a Prayer",
+    "artist": "Madonna",
+    "year": 1989,
+    "era": "80s",
+    "genre": "pop",
+    "points": 3,
+    "youtube": { "videoId": "79fzeNevRxM", "startAt": 20 }
+  },
+  {
+    "id": 12,
+    "title": "Sweet Child O' Mine",
+    "artist": "Guns N' Roses",
+    "year": 1987,
+    "era": "80s",
+    "genre": "rock",
+    "points": 2,
+    "youtube": { "videoId": "1w7OgIMMRc4", "startAt": 15 }
+  },
+  {
+    "id": 13,
+    "title": "Smells Like Teen Spirit",
+    "artist": "Nirvana",
+    "year": 1991,
+    "era": "90s",
+    "genre": "rock",
+    "points": 2,
+    "youtube": { "videoId": "hTWKbfoikeg", "startAt": 30 }
+  },
+  {
+    "id": 14,
+    "title": "I Will Always Love You",
+    "artist": "Whitney Houston",
+    "year": 1992,
+    "era": "90s",
+    "genre": "pop",
+    "points": 2,
+    "youtube": { "videoId": "3JWTaaS7LdU", "startAt": 40 }
+  },
+  {
+    "id": 15,
+    "title": "Wannabe",
+    "artist": "Spice Girls",
+    "year": 1996,
+    "era": "90s",
+    "genre": "pop",
+    "points": 1,
+    "youtube": { "videoId": "gJLIiF15wGQ", "startAt": 5 }
+  },
+  {
+    "id": 16,
+    "title": "I Want It That Way",
+    "artist": "Backstreet Boys",
+    "year": 1999,
+    "era": "90s",
+    "genre": "pop",
+    "points": 1,
+    "youtube": { "videoId": "4fndeDfaWCg", "startAt": 10 }
+  },
+  {
+    "id": 17,
+    "title": "It Must Have Been Love",
+    "artist": "Roxette",
+    "year": 1990,
+    "era": "90s",
+    "genre": "pop",
+    "points": 2,
+    "youtube": { "videoId": "HkiQEm_0v6k", "startAt": 20 }
+  },
+  {
+    "id": 18,
+    "title": "The Sign",
+    "artist": "Ace of Base",
+    "year": 1993,
+    "era": "90s",
+    "genre": "pop",
+    "points": 2,
+    "youtube": { "videoId": "oj_-TCQW7RU", "startAt": 10 }
+  },
+  {
+    "id": 19,
+    "title": "It's My Life",
+    "artist": "Dr. Alban",
+    "year": 1992,
+    "era": "90s",
+    "genre": "eurodance",
+    "points": 2,
+    "youtube": { "videoId": "mNBbgm9YWNI", "startAt": 10 }
+  },
+  {
+    "id": 20,
+    "title": "Angels",
+    "artist": "Robbie Williams",
+    "year": 1997,
+    "era": "90s",
+    "genre": "pop",
+    "points": 2,
+    "youtube": { "videoId": "_Whsf1GiqlY", "startAt": 30 }
+  },
+  {
+    "id": 21,
+    "title": "Lose Yourself",
+    "artist": "Eminem",
+    "year": 2002,
+    "era": "00s",
+    "genre": "hip-hop",
+    "points": 2,
+    "youtube": { "videoId": "xFYQQPAOz7Y", "startAt": 20 }
+  },
+  {
+    "id": 22,
+    "title": "Crazy in Love",
+    "artist": "Beyoncé",
+    "year": 2003,
+    "era": "00s",
+    "genre": "r&b",
+    "points": 2,
+    "youtube": { "videoId": "ViwtNLUqkMY", "startAt": 15 }
+  },
+  {
+    "id": 23,
+    "title": "Rehab",
+    "artist": "Amy Winehouse",
+    "year": 2006,
+    "era": "00s",
+    "genre": "soul",
+    "points": 3,
+    "youtube": { "videoId": "KUmZp8pR1uc", "startAt": 10 }
+  },
+  {
+    "id": 24,
+    "title": "I Gotta Feeling",
+    "artist": "The Black Eyed Peas",
+    "year": 2009,
+    "era": "00s",
+    "genre": "pop",
+    "points": 1,
+    "youtube": { "videoId": "uSD4vsh1zDA", "startAt": 10 }
+  },
+  {
+    "id": 25,
+    "title": "Wake Me Up",
+    "artist": "Avicii",
+    "year": 2013,
+    "era": "10s",
+    "genre": "edm",
+    "points": 2,
+    "youtube": { "videoId": "IcrbM1l_BoI", "startAt": 0 }
+  },
+  {
+    "id": 26,
+    "title": "Levels",
+    "artist": "Avicii",
+    "year": 2011,
+    "era": "10s",
+    "genre": "edm",
+    "points": 2,
+    "youtube": { "videoId": "_ovdm2yX4MA", "startAt": 20 }
+  },
+  {
+    "id": 27,
+    "title": "Blinding Lights",
+    "artist": "The Weeknd",
+    "year": 2019,
+    "era": "10s",
+    "genre": "pop",
+    "points": 2,
+    "youtube": { "videoId": "4NRXx6U8ABQ", "startAt": 20 }
+  },
+  {
+    "id": 28,
+    "title": "Dancing On My Own",
+    "artist": "Robyn",
+    "year": 2010,
+    "era": "10s",
+    "genre": "pop",
+    "points": 3,
+    "youtube": { "videoId": "CcNo3a1n1WU", "startAt": 20 }
+  },
+  {
+    "id": 29,
+    "title": "Don't You Worry Child",
+    "artist": "Swedish House Mafia",
+    "year": 2012,
+    "era": "10s",
+    "genre": "edm",
+    "points": 2,
+    "youtube": { "videoId": "qBjyLEHwZ2M", "startAt": 60 }
+  },
+  {
+    "id": 30,
+    "title": "Shape of You",
+    "artist": "Ed Sheeran",
+    "year": 2017,
+    "era": "10s",
+    "genre": "pop",
+    "points": 1,
+    "youtube": { "videoId": "JGwWNGJdvx8", "startAt": 10 }
+  },
+  {
+    "id": 31,
+    "title": "Rolling in the Deep",
+    "artist": "Adele",
+    "year": 2010,
+    "era": "10s",
+    "genre": "soul",
+    "points": 2,
+    "youtube": { "videoId": "rYEDA3JcQqw", "startAt": 5 }
+  },
+  {
+    "id": 32,
+    "title": "Get Lucky",
+    "artist": "Daft Punk",
+    "year": 2013,
+    "era": "10s",
+    "genre": "pop",
+    "points": 2,
+    "youtube": { "videoId": "5NV6Rdv1h3Q", "startAt": 20 }
+  }
+]
