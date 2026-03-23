@@ -35,17 +35,6 @@ const MusicQuiz = (() => {
     ],
   };
 
-  const QUESTION_TEMPLATES = [
-    '🎵 Lyssna noga – vilken låt spelas?',
-    '🎵 Hör du det? Vilken låt är det?',
-    '🎵 Kan du identifiera den här låten?',
-    '🎵 Lyssna – vilken av dessa spelas?',
-  ];
-
-  function getTemplate(idx) {
-    return QUESTION_TEMPLATES[idx % QUESTION_TEMPLATES.length];
-  }
-
   function setStatus(text, color) {
     const el = document.getElementById('trivia-status');
     if (!el) return;
@@ -61,21 +50,42 @@ const MusicQuiz = (() => {
     el.style.display = label ? 'inline-block' : 'none';
   }
 
+  async function showCacheStatus() {
+    try {
+      const res = await fetch('/api/music-cache-status');
+      const { total, cached, hasApiKey } = await res.json();
+      if (!hasApiKey) {
+        setStatus(
+          `🎵 ${cached}/${total} låtar förcachade. Lägg till YOUTUBE_API_KEY i .env för full sökning.`,
+          '#f59e0b'
+        );
+      } else {
+        setStatus(`🎵 ${cached}/${total} låtar i cache – ${total - cached} söks vid laddning.`, '#a855f7');
+      }
+    } catch {}
+  }
+
   function init(socket) {
     const btn = document.getElementById('btn-load-music');
     if (!btn) return;
 
+    // Visa cache-status direkt
+    showCacheStatus();
+
     btn.addEventListener('click', async () => {
       btn.disabled = true;
-      btn.textContent = '⏳ Laddar låtar…';
-      setStatus('🎵 Hämtar musikfrågor…', '#a855f7');
+      btn.textContent = '⏳ Söker låtar…';
+      setStatus('🎵 Söker YouTube-IDs och bygger frågor…', '#a855f7');
 
       try {
         const res = await fetch('/api/music-questions?count=12');
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
+          throw new Error(err.error || `HTTP ${res.status}`);
+        }
         const { questions } = await res.json();
 
-        setStatus(`✅ ${questions.length} musikfrågor laddade!`, '#22c55e');
+        setStatus(`✅ ${questions.length} musikfrågor laddade från ${154} låtar!`, '#22c55e');
         btn.textContent = `🎵 ${questions.length} låtar laddade!`;
         setModeIndicator('🎵 MUSIKQUIZ-LÄGE');
 
@@ -88,7 +98,7 @@ const MusicQuiz = (() => {
 
         socket.emit('host:load_music', questions);
       } catch (err) {
-        setStatus(`❌ Misslyckades: ${err.message}`, '#ef4444');
+        setStatus(`❌ ${err.message}`, '#ef4444');
         btn.disabled = false;
         btn.textContent = '🎵 Musikquiz-läge';
       }
@@ -101,7 +111,7 @@ const MusicQuiz = (() => {
         setModeIndicator('🎲 TRIVIA-LÄGE');
         btn.disabled = false;
         btn.textContent = '🎵 Musikquiz-läge';
-      }, { once: false });
+      });
     }
   }
 
