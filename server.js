@@ -681,18 +681,16 @@ const MUSIC_QUESTION_TEMPLATES = [
 ];
 
 async function buildMusicQuestions(count) {
-  // Ta fler kandidater än vi behöver – en del kan sakna YouTube-ID
-  const candidates = shuffleArray(songDatabase).slice(0, Math.min(count * 4, songDatabase.length));
+  const candidates = shuffleArray(songDatabase);
+  const selected = [];
 
-  // Hämta YouTube-IDs parallellt (cache-träffar är synkrona i praktiken)
-  const resolved = await Promise.all(
-    candidates.map(async song => {
-      const videoId = await getVideoId(song);
-      return videoId ? { ...song, videoId } : null;
-    })
-  );
-
-  const selected = resolved.filter(Boolean).slice(0, count);
+  // Sekventiell sökning – stoppar så fort vi har tillräckligt.
+  // Förhindrar rate-limiting (403) från YouTube Data API.
+  for (const song of candidates) {
+    if (selected.length >= count) break;
+    const videoId = await getVideoId(song);
+    if (videoId) selected.push({ ...song, videoId });
+  }
 
   return selected.map((song, idx) => {
     const correctLabel = `${song.artist} – ${song.title}`;
