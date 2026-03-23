@@ -163,10 +163,6 @@
       <div id="media-image" class="media-image-wrap" style="display:none">
         <img id="media-img" src="" alt="" class="media-img">
       </div>
-      <!-- Hidden YouTube player for audio-only mode -->
-      <div id="yt-audio-container" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden">
-        <div id="yt-audio-player"></div>
-      </div>
       <!-- Play button -->
       <button id="btn-play-media" class="btn-play-media" style="display:none">▶ SPELA</button>
     </div>
@@ -232,6 +228,11 @@
   <div id="buzz-overlay" class="buzz-overlay hidden">
     <div class="buzz-name" id="buzz-player-name">JOHAN</div>
     <div class="buzz-label">BUZZADE IN!</div>
+  </div>
+
+  <!-- YouTube audio player – måste vara synlig i viewporten annars blockeras autoplay -->
+  <div id="yt-audio-container" style="position:fixed;bottom:0;right:0;width:2px;height:2px;overflow:hidden;z-index:0;pointer-events:none">
+    <div id="yt-audio-player"></div>
   </div>
 
   <script src="https://www.youtube.com/iframe_api"></script>
