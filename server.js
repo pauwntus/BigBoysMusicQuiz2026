@@ -44,7 +44,7 @@ async function searchYouTube(artist, title) {
   const apiKey = process.env.YOUTUBE_API_KEY;
   if (!apiKey) return null;
   const q = encodeURIComponent(`${artist} ${title} official audio`);
-  const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${q}&type=video&videoCategoryId=10&maxResults=1&key=${apiKey}`;
+  const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${q}&type=video&videoCategoryId=10&videoEmbeddable=true&maxResults=1&key=${apiKey}`;
   try {
     const res = await fetch(url);
     if (!res.ok) {
@@ -727,6 +727,20 @@ app.get('/api/music-questions', async (req, res) => {
     console.error('[musik] Fel vid bygge av musikfrågor:', e.message);
     res.status(500).json({ error: e.message });
   }
+});
+
+// Markera ett video-ID som ej inbäddningsbart – tas bort från cache
+app.post('/api/music-cache-invalidate', express.json(), (req, res) => {
+  const { videoId } = req.body || {};
+  if (!videoId) return res.status(400).json({ error: 'videoId saknas' });
+  const removed = Object.entries(ytCache)
+    .filter(([, v]) => v.videoId === videoId)
+    .map(([k]) => { delete ytCache[k]; return k; });
+  if (removed.length) {
+    saveYtCache();
+    console.log(`[musik] Cache-post invaliderad (ej inbäddningsbar): ${removed.join(', ')} – videoId=${videoId}`);
+  }
+  res.json({ removed });
 });
 
 // Cache-status (hur många låtar är förcachade)

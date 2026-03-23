@@ -196,7 +196,26 @@ window.onYouTubeIframeAPIReady = () => {
     playerVars: { controls: 0, rel: 0, modestbranding: 1, disablekb: 1, iv_load_policy: 3, origin: window.location.origin },
     events: {
       onReady: () => { ytAudioReady = true; console.log('[YT] Audio-spelare redo'); },
-      onError: (e) => console.warn('[YT] Audio-fel:', e.data),
+      onError: (e) => {
+        console.warn('[YT] Audio-fel:', e.data);
+        const UNPLAYABLE = [100, 101, 150]; // saknas / ej inbäddningsbar
+        if (UNPLAYABLE.includes(e.data)) {
+          pauseSoundBars();
+          mediaState.isPlaying = false;
+          const pb = document.getElementById('btn-play-media');
+          if (pb) { pb.textContent = '▶ SPELA'; pb.classList.remove('playing'); }
+          const npt = document.getElementById('now-playing-text');
+          if (npt) npt.textContent = '⚠ Kan ej spelas (upphovsrätt)';
+          // Invalidera cache-posten så nästa sökning hittar en ny video
+          if (mediaState.videoId) {
+            fetch('/api/music-cache-invalidate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ videoId: mediaState.videoId }),
+            }).catch(() => {});
+          }
+        }
+      },
       onStateChange: (e) => console.log('[YT] State:', e.data),
     },
   });
