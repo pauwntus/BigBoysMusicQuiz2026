@@ -43,7 +43,9 @@ function ytCacheKey(artist, title) {
 async function searchYouTube(artist, title) {
   const apiKey = process.env.YOUTUBE_API_KEY;
   if (!apiKey) return null;
-  const q = encodeURIComponent(`${artist} ${title} official audio`);
+  // "official audio" söker upp skivbolagsversioner som ofta blockerar embedding.
+  // Sök istället utan suffix – YouTube-topic-kanaler (alltid inbäddningsbara) hamnar högt.
+  const q = encodeURIComponent(`${title} ${artist}`);
   const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${q}&type=video&videoCategoryId=10&videoEmbeddable=true&maxResults=1&key=${apiKey}`;
   try {
     const res = await fetch(url);
